@@ -1,9 +1,8 @@
-# WebTracker 8-bit
+# TrackWeb
 
 Tracker clásico estilo MOD/XM en el navegador con síntesis 8-bit, efectos clásicos y grabación de stems.
 
-**Stack:** JavaScript + p5.js + WebAudio API  
-**Demo:** [Ver demo en vivo](#) _(pendiente deploy)_
+**Stack:** JavaScript + p5.js + WebAudio API
 
 ---
 
@@ -11,8 +10,8 @@ Tracker clásico estilo MOD/XM en el navegador con síntesis 8-bit, efectos clá
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/tu-usuario/webtracker-8bit.git
-cd webtracker-8bit
+git clone https://github.com/sebasdv/trackerweb.git
+cd trackerweb
 
 # Abrir con servidor local (Python 3)
 python -m http.server 8000
@@ -31,7 +30,7 @@ open http://localhost:8000
 ## 📁 Estructura del Proyecto
 
 ```
-webtracker-8bit/
+trackerweb/
 ├── index.html              # Punto de entrada
 ├── main.js                 # p5.js sketch principal
 ├── style.css               # Estilos UI
@@ -98,113 +97,9 @@ webtracker-8bit/
 
 ---
 
-## 🚀 Desarrollo con Claude Code
+## 🚀 Desarrollo
 
-### Setup Inicial
-
-```bash
-# 1. Inicializar proyecto
-claude code init webtracker-8bit
-
-# 2. Crear estructura de archivos
-claude code "Crea la estructura completa del proyecto según el README"
-
-# 3. Implementar AudioEngine básico
-claude code "Implementa AudioEngine.js con osciladores pulse, triangle, sawtooth y noise"
-
-# 4. Crear estructuras de datos
-claude code "Implementa Song.js, Pattern.js e Instrument.js con serialización JSON"
-```
-
-### Workflow de Desarrollo
-
-**Fase 1: Motor de Audio (Semana 1)**
-```bash
-# Implementar síntesis básica
-claude code "Agrega método playNote() al AudioEngine con ADSR envelope"
-
-# Test síntesis
-claude code "Crea archivo test/audio-test.html para probar los osciladores"
-
-# Implementar conversión nota a frecuencia
-claude code "Implementa noteToFrequency() usando fórmula MIDI estándar"
-```
-
-**Fase 2: Secuenciador (Semana 2)**
-```bash
-# Implementar timing
-claude code "Implementa Sequencer.js con control de BPM y speed"
-
-# Pattern playback
-claude code "Agrega método processRow() para trigger de notas"
-
-# Multi-canal
-claude code "Implementa soporte para 4 canales simultáneos"
-```
-
-**Fase 3: UI con p5.js (Semana 3)**
-```bash
-# Pattern editor visual
-claude code "Implementa PatternEditor.js con grid rendering en canvas"
-
-# Input handling
-claude code "Agrega handleKeyPress() con soporte de teclado QWERTY"
-
-# Visualizador
-claude code "Implementa Visualizer.js con FFT spectrum display"
-```
-
-**Fase 4: Efectos (Semana 4)**
-```bash
-# Efectos básicos
-claude code "Implementa efecto Arpeggio (0xy) en Effects.js"
-claude code "Implementa efecto Vibrato (4xy) con LFO senoidal"
-claude code "Implementa efectos Portamento Up/Down (1xx, 2xx)"
-
-# Test efectos
-claude code "Crea pattern de ejemplo con todos los efectos implementados"
-```
-
-**Fase 5: Export y Stems (Semana 5)**
-```bash
-# Grabación
-claude code "Implementa StemRecorder.js con MediaRecorder API"
-
-# Export WAV
-claude code "Agrega método audioBufferToWav() para export offline"
-
-# UI export
-claude code "Crea modal de export con opciones de formato y stems"
-```
-
-### Testing y Debug
-
-```bash
-# Verificar síntesis
-claude code "Agrega console logs para debugging de frecuencias"
-
-# Performance profiling
-claude code "Implementa contador de voces activas y uso de CPU"
-
-# Browser compatibility
-claude code "Agrega detección de features y fallbacks para Safari"
-```
-
-### Comandos Útiles
-
-```bash
-# Generar documentación JSDoc
-claude code "Agrega JSDoc comments a todos los métodos públicos"
-
-# Crear canciones de ejemplo
-claude code "Genera 3 patterns de ejemplo: techno, chiptune, ambient"
-
-# Optimizar performance
-claude code "Refactoriza PatternEditor.render() para usar createGraphics"
-
-# Mobile support
-claude code "Agrega touch events y UI responsive"
-```
+Para guías detalladas de desarrollo con Claude Code, workflows y comandos útiles, consulta [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ---
 
@@ -629,7 +524,7 @@ git push origin main
 # Settings → Pages → Source: main branch → /root
 
 # 3. URL será:
-# https://tu-usuario.github.io/webtracker-8bit/
+# https://sebasdv.github.io/trackerweb/
 ```
 
 ### Netlify
@@ -659,36 +554,19 @@ vercel --prod
 
 ---
 
-## 📝 TODO
+## 📝 Roadmap
 
-### Fase 1 (MVP)
-- [ ] AudioEngine con 4 waveforms básicas
-- [ ] Pattern/Song data structures
-- [ ] Sequencer con timing correcto
-- [ ] PatternEditor visual con p5.js
-- [ ] 4 canales simultáneos
+### MVP (En desarrollo)
+- [ ] Motor de audio básico (4 waveforms)
+- [ ] Secuenciador y patterns
+- [ ] Editor visual con p5.js
 - [ ] Save/Load JSON
 
-### Fase 2 (Features)
-- [ ] Todos los efectos MOD
+### Próximas Features
+- [ ] Efectos MOD completos
 - [ ] Visualizador FFT
-- [ ] Copy/paste patterns
-- [ ] Undo/Redo
-- [ ] Grabación stems
-- [ ] Export WAV
-
-### Fase 3 (Polish)
-- [ ] UI responsive
-- [ ] Mobile support
-- [ ] Themes (dark/light/retro)
-- [ ] Keyboard shortcuts completos
-- [ ] Tutorial interactivo
-
-### Future
-- [ ] Web MIDI input
-- [ ] Collaborative editing
-- [ ] VST export
-- [ ] PWA offline support
+- [ ] Export WAV/stems
+- [ ] UI responsive y mobile support
 
 ---
 
@@ -696,7 +574,7 @@ vercel --prod
 
 ```bash
 # Fork el repo
-git clone https://github.com/tu-usuario/webtracker-8bit.git
+git clone https://github.com/sebasdv/trackerweb.git
 
 # Crear branch
 git checkout -b feature/nueva-feature
@@ -726,9 +604,9 @@ MIT License - ver [LICENSE](LICENSE)
 
 ## 👨‍💻 Autor
 
-**Tu Nombre**  
-- GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- Email: tu-email@example.com
+**Sebastian Duarte**
+- GitHub: [@sebasdv](https://github.com/sebasdv)
+- Email: sebasdv@gmail.com
 
 ---
 

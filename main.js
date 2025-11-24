@@ -132,8 +132,9 @@ function startAudio() {
   // Crear sequencer
   sequencer = new Sequencer(audioEngine, song);
 
-  // Conectar UI con sequencer
+  // Conectar UI con sequencer y audio engine
   controls.setSequencer(sequencer, song);
+  patternEditor.setPattern(song.patterns[0], song, audioEngine);
 
   // Callback para sincronizar cursor con playback
   sequencer.onRowChange = (row) => {
@@ -147,7 +148,8 @@ function startAudio() {
   // Inicializar display del tempo
   updateTempoDisplay();
 
-  console.log('Audio iniciado');
+  console.log('Audio iniciado - Edición de notas habilitada');
+  console.log('Teclas: Z-M para notas | 0-9 para cambiar octava | Tab para cambiar campo');
 }
 
 /**

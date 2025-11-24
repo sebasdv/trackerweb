@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrackWeb - 8-bit Music Tracker</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- p5.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>TrackWeb</h1>
+      <p>8-bit Music Tracker</p>
+    </header>
+
+    <div id="canvas-container"></div>
+
+    <div id="info">
+      <p>Space: Play/Pause | Enter: Stop | F5/F6: Tempo -/+ | Arrow Keys: Navigate</p>
+    </div>
+  </div>
+
+  <!-- Data structures -->
+  <script src="data/Instrument.js"></script>
+  <script src="data/Pattern.js"></script>
+  <script src="data/Song.js"></script>
+
+  <!-- Core audio engine -->
+  <script src="core/AudioEngine.js"></script>
+  <script src="core/Sequencer.js"></script>
+  <script src="core/Effects.js"></script>
+
+  <!-- UI components -->
+  <script src="ui/PatternEditor.js"></script>
+  <script src="ui/Visualizer.js"></script>
+  <script src="ui/Controls.js"></script>
+
+  <!-- Main sketch -->
+  <script src="main.js"></script>
+</body>
+</html>

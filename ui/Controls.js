@@ -64,7 +64,7 @@ class Controls {
     // Instrucciones
     fill(150);
     textSize(11);
-    text('SPACE: Play/Pause | ENTER: Stop | F5/F6: Tempo | Arrows: Navigate', 10, 45);
+    text('SPACE: Play/Pause | ENTER: Stop | Arrows: Navigate', 10, 45);
 
     pop();
   }
@@ -92,18 +92,6 @@ class Controls {
     // Enter: Stop
     if (keyCode === ENTER) {
       this.sequencer.stop();
-      return true;
-    }
-
-    // F5: Tempo -
-    if (keyCode === 116) { // F5
-      this.sequencer.setBPM(this.song.bpm - 5);
-      return true;
-    }
-
-    // F6: Tempo +
-    if (keyCode === 117) { // F6
-      this.sequencer.setBPM(this.song.bpm + 5);
       return true;
     }
 

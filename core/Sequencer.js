@@ -33,9 +33,9 @@ class Sequencer {
    * @returns {number} Intervalo en ms
    */
   calculateTickInterval() {
-    // Formula: ticksPerSecond = (BPM * speed) / 150
-    const ticksPerSecond = (this.song.bpm * this.song.speed) / 150;
-    return 1000 / ticksPerSecond;
+    // Formula estándar de FastTracker 2: cada tick = 2500ms / BPM
+    // El speed determina cuántos ticks por row, no afecta el tiempo del tick
+    return 2500 / this.song.bpm;
   }
 
   /**

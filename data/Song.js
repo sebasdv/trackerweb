@@ -37,12 +37,96 @@ class Song {
 
   /**
    * Agrega un nuevo pattern
+   * @param {number} rows - Número de filas (opcional, default 64)
    * @returns {number} Índice del nuevo pattern
    */
-  addPattern() {
-    const pattern = new Pattern(this.channels, 64);
+  addPattern(rows = 64) {
+    const pattern = new Pattern(this.channels, rows);
     this.patterns.push(pattern);
     return this.patterns.length - 1;
+  }
+
+  /**
+   * Elimina un pattern (si no está en uso en el order)
+   * @param {number} index - Índice del pattern a eliminar
+   * @returns {boolean} True si se eliminó exitosamente
+   */
+  deletePattern(index) {
+    if (index < 0 || index >= this.patterns.length) {
+      return false;
+    }
+
+    // No permitir eliminar si solo hay un pattern
+    if (this.patterns.length <= 1) {
+      console.warn('No se puede eliminar el único pattern');
+      return false;
+    }
+
+    // Verificar si el pattern está en uso en el order
+    const isInUse = this.order.includes(index);
+    if (isInUse) {
+      console.warn('No se puede eliminar un pattern que está en el order');
+      return false;
+    }
+
+    // Eliminar el pattern
+    this.patterns.splice(index, 1);
+
+    // Actualizar referencias en el order (decrementar índices mayores)
+    this.order = this.order.map(patIdx => patIdx > index ? patIdx - 1 : patIdx);
+
+    return true;
+  }
+
+  /**
+   * Clona un pattern existente
+   * @param {number} index - Índice del pattern a clonar
+   * @returns {number} Índice del nuevo pattern clonado
+   */
+  clonePattern(index) {
+    const pattern = this.getPattern(index);
+    if (!pattern) {
+      return -1;
+    }
+
+    const clonedPattern = pattern.clone();
+    this.patterns.push(clonedPattern);
+    return this.patterns.length - 1;
+  }
+
+  /**
+   * Agrega un pattern al order
+   * @param {number} patternIndex - Índice del pattern a agregar
+   * @param {number} position - Posición en el order (opcional, default al final)
+   */
+  addToOrder(patternIndex, position = -1) {
+    if (patternIndex < 0 || patternIndex >= this.patterns.length) {
+      return;
+    }
+
+    if (position < 0 || position >= this.order.length) {
+      this.order.push(patternIndex);
+    } else {
+      this.order.splice(position, 0, patternIndex);
+    }
+  }
+
+  /**
+   * Elimina una posición del order
+   * @param {number} position - Posición en el order a eliminar
+   */
+  removeFromOrder(position) {
+    if (position < 0 || position >= this.order.length) {
+      return;
+    }
+
+    // No permitir eliminar si solo hay un entry
+    if (this.order.length <= 1) {
+      console.warn('El order debe tener al menos un entry');
+      return;
+    }
+
+    this.order.splice(position, 1);
   }
 
   /**

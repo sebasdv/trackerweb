@@ -136,6 +136,13 @@ class PatternEditor {
     noStroke();
     rect(0, 0, this.width, 30);
 
+    // Info de pattern (tamaño)
+    fill(150);
+    textSize(11);
+    textAlign(LEFT, CENTER);
+    text(`${this.pattern.rows} rows`, 5, 15);
+
+    // Canales
     fill(200);
     textSize(12);
     textAlign(CENTER, CENTER);

@@ -69,13 +69,15 @@ header p {
 }
 
 #tempo-controls,
+#pattern-controls,
 #playback-controls {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-#tempo-controls label {
+#tempo-controls label,
+#pattern-controls label {
   color: #aaa;
   font-size: 0.9em;
   margin-right: 5px;
@@ -94,7 +96,7 @@ header p {
   font-size: 1em;
 }
 
-/* Buttons */
+/* Buttons and Select */
 .btn {
   padding: 8px 16px;
   background: #2a2a3e;
@@ -106,6 +108,16 @@ header p {
   font-size: 0.9em;
   transition: all 0.2s ease;
   outline: none;
+}
+
+select.btn {
+  padding: 8px 12px;
+  min-width: 70px;
+}
+
+select.btn:hover {
+  background: #3a3a4e;
+  border-color: #555;
 }
 
 .btn:hover {

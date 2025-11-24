@@ -131,4 +131,35 @@ class Pattern {
   clone() {
     return Pattern.fromJSON(this.toJSON());
   }
+
+  /**
+   * Cambia el tamaño del pattern (preserva datos existentes)
+   * @param {number} newRows - Nuevo número de filas
+   */
+  resize(newRows) {
+    if (newRows === this.rows) {
+      return; // Sin cambios
+    }
+
+    const oldData = this.data;
+    const oldRows = this.rows;
+
+    // Crear nuevo array de datos
+    this.rows = newRows;
+    this.data = [];
+
+    for (let row = 0; row < newRows; row++) {
+      const rowData = [];
+      for (let ch = 0; ch < this.channels; ch++) {
+        // Copiar celda existente si está dentro del rango anterior
+        if (row < oldRows) {
+          rowData.push({ ...oldData[row][ch] });
+        } else {
+          // Nueva celda vacía
+          rowData.push(this.createEmptyCell());
+        }
+      }
+      this.data.push(rowData);
+    }
+  }
 }

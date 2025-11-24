@@ -145,8 +145,9 @@ function startAudio() {
 
   audioStarted = true;
 
-  // Inicializar display del tempo
+  // Inicializar displays
   updateTempoDisplay();
+  updatePatternRowsDisplay();
 
   console.log('Audio iniciado - Edición de notas habilitada');
   console.log('Teclas: Z-M para notas | 0-9 para cambiar octava | Tab para cambiar campo');
@@ -217,12 +218,15 @@ function loadSong() {
     if (file) {
       try {
         song = await Song.load(file);
-        patternEditor.setPattern(song.patterns[0], song);
+        patternEditor.setPattern(song.patterns[0], song, audioEngine);
         if (sequencer) {
           sequencer.song = song;
           sequencer.stop();
           controls.setSequencer(sequencer, song);
         }
+        // Actualizar displays
+        updateTempoDisplay();
+        updatePatternRowsDisplay();
         console.log('Canción cargada:', song.title);
       } catch (error) {
         console.error('Error cargando canción:', error);
@@ -273,6 +277,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Pattern rows selector
+  const patternRowsSelect = document.getElementById('pattern-rows');
+
+  patternRowsSelect.addEventListener('change', (e) => {
+    if (audioStarted && song) {
+      const newRows = parseInt(e.target.value);
+      const currentPattern = song.patterns[0]; // TODO: Soportar múltiples patterns
+
+      if (currentPattern) {
+        currentPattern.resize(newRows);
+
+        // Ajustar cursor si está fuera del nuevo rango
+        if (patternEditor && patternEditor.cursorRow >= newRows) {
+          patternEditor.cursorRow = newRows - 1;
+          patternEditor.setCursorRow(newRows - 1);
+        }
+
+        console.log(`Pattern resized to ${newRows} rows`);
+      }
+    }
+  });
+
   // Botones de reproducción
   const playPauseBtn = document.getElementById('play-pause');
   const stopBtn = document.getElementById('stop');
@@ -316,5 +342,15 @@ function updateTempoDisplay() {
   const tempoDisplay = document.getElementById('tempo-display');
   if (tempoDisplay && song) {
     tempoDisplay.textContent = song.bpm;
+  }
+}
+
+/**
+ * Actualiza el selector de tamaño de pattern
+ */
+function updatePatternRowsDisplay() {
+  const patternRowsSelect = document.getElementById('pattern-rows');
+  if (patternRowsSelect && song && song.patterns[0]) {
+    patternRowsSelect.value = song.patterns[0].rows;
   }
 }

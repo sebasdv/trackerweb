@@ -17,10 +17,23 @@
       <p>8-bit Music Tracker</p>
     </header>
 
+    <div id="controls-bar">
+      <div id="tempo-controls">
+        <label>Tempo (BPM):</label>
+        <button id="tempo-down" class="btn">-</button>
+        <span id="tempo-display">125</span>
+        <button id="tempo-up" class="btn">+</button>
+      </div>
+      <div id="playback-controls">
+        <button id="play-pause" class="btn btn-primary">▶ Play</button>
+        <button id="stop" class="btn">⏹ Stop</button>
+      </div>
+    </div>
+
     <div id="canvas-container"></div>
 
     <div id="info">
-      <p>Space: Play/Pause | Enter: Stop | F5/F6: Tempo -/+ | Arrow Keys: Navigate</p>
+      <p>Space: Play/Pause | Enter: Stop | Arrow Keys: Navigate | Ctrl+S: Save | Ctrl+O: Open</p>
     </div>
   </div>
 

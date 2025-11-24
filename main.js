@@ -103,6 +103,8 @@ function keyPressed() {
 
   // Controles primero
   if (controls.handleKeyPress(key, keyCode)) {
+    // Actualizar botón de play/pause
+    updatePlayPauseButton();
     return false; // Prevenir default
   }
 
@@ -141,6 +143,10 @@ function startAudio() {
   };
 
   audioStarted = true;
+
+  // Inicializar display del tempo
+  updateTempoDisplay();
+
   console.log('Audio iniciado');
 }
 
@@ -243,3 +249,70 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+
+// Event listeners para botones de control
+document.addEventListener('DOMContentLoaded', () => {
+  // Botones de tempo
+  const tempoDown = document.getElementById('tempo-down');
+  const tempoUp = document.getElementById('tempo-up');
+  const tempoDisplay = document.getElementById('tempo-display');
+
+  tempoDown.addEventListener('click', () => {
+    if (audioStarted && sequencer) {
+      sequencer.setBPM(song.bpm - 5);
+      updateTempoDisplay();
+    }
+  });
+
+  tempoUp.addEventListener('click', () => {
+    if (audioStarted && sequencer) {
+      sequencer.setBPM(song.bpm + 5);
+      updateTempoDisplay();
+    }
+  });
+
+  // Botones de reproducción
+  const playPauseBtn = document.getElementById('play-pause');
+  const stopBtn = document.getElementById('stop');
+
+  playPauseBtn.addEventListener('click', () => {
+    if (!audioStarted) {
+      startAudio();
+    } else if (sequencer) {
+      if (sequencer.isPlaying) {
+        sequencer.pause();
+        playPauseBtn.textContent = '▶ Play';
+      } else {
+        sequencer.play();
+        playPauseBtn.textContent = '⏸ Pause';
+      }
+    }
+  });
+
+  stopBtn.addEventListener('click', () => {
+    if (audioStarted && sequencer) {
+      sequencer.stop();
+      playPauseBtn.textContent = '▶ Play';
+    }
+  });
+});
+
+/**
+ * Actualiza el botón de play/pause
+ */
+function updatePlayPauseButton() {
+  const playPauseBtn = document.getElementById('play-pause');
+  if (playPauseBtn && sequencer) {
+    playPauseBtn.textContent = sequencer.isPlaying ? '⏸ Pause' : '▶ Play';
+  }
+}
+
+/**
+ * Actualiza el display del tempo
+ */
+function updateTempoDisplay() {
+  const tempoDisplay = document.getElementById('tempo-display');
+  if (tempoDisplay && song) {
+    tempoDisplay.textContent = song.bpm;
+  }
+}

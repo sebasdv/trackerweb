@@ -11,7 +11,6 @@ let sequencer;
 
 // UI Components
 let patternEditor;
-let visualizer;
 let controls;
 
 // Estado
@@ -34,10 +33,8 @@ function setup() {
   createExampleSong();
 
   // Crear UI components
-  patternEditor = new PatternEditor(20, 120, 1160, 420);
+  patternEditor = new PatternEditor(20, 120, 1160, 620);
   patternEditor.setPattern(song.patterns[0], song);
-
-  visualizer = new Visualizer(20, 560, 1160, 160);
 
   controls = new Controls(20, 50, 1160);
 
@@ -82,7 +79,6 @@ function draw() {
   // Renderizar UI
   controls.render();
   patternEditor.render();
-  visualizer.render(audioEngine);
 }
 
 /**

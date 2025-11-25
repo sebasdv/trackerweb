@@ -112,6 +112,22 @@ function keyPressed() {
   // Pattern editor
   patternEditor.handleKeyPress(key, keyCode);
 
+  // Actualizar selección si Shift está presionado y se movió el cursor
+  if (keyIsDown(SHIFT)) {
+    const isArrow = keyCode === UP_ARROW || keyCode === DOWN_ARROW ||
+                    keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW;
+    if (isArrow) {
+      patternEditor.updateSelection();
+    }
+  } else {
+    // Si no hay Shift, cancelar selección al mover
+    const isArrow = keyCode === UP_ARROW || keyCode === DOWN_ARROW ||
+                    keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW;
+    if (isArrow) {
+      patternEditor.cancelSelection();
+    }
+  }
+
   return false; // Prevenir default
 }
 
@@ -254,7 +270,7 @@ function loadSong() {
   input.click();
 }
 
-// Agregar shortcuts para save/load
+// Agregar shortcuts para save/load y copy/paste
 document.addEventListener('keydown', (e) => {
   // Ctrl+S: Save
   if (e.ctrlKey && e.key === 's') {
@@ -270,6 +286,51 @@ document.addEventListener('keydown', (e) => {
     if (audioStarted) {
       loadSong();
     }
+  }
+
+  // Ctrl+C: Copy
+  if (e.ctrlKey && e.key === 'c') {
+    e.preventDefault();
+    if (audioStarted && patternEditor) {
+      patternEditor.copySelection();
+    }
+  }
+
+  // Ctrl+X: Cut
+  if (e.ctrlKey && e.key === 'x') {
+    e.preventDefault();
+    if (audioStarted && patternEditor) {
+      patternEditor.cutSelection();
+    }
+  }
+
+  // Ctrl+V: Paste
+  if (e.ctrlKey && e.key === 'v') {
+    e.preventDefault();
+    if (audioStarted && patternEditor) {
+      patternEditor.pasteSelection();
+    }
+  }
+
+  // Shift+Flechas: Selección
+  if (e.shiftKey && audioStarted && patternEditor) {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown' ||
+        e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+
+      // Iniciar selección si no está activa
+      if (!patternEditor.selectionActive) {
+        patternEditor.startSelection();
+      }
+
+      // El movimiento del cursor lo maneja p5.js keyPressed
+      // Solo necesitamos actualizar la selección después
+    }
+  }
+
+  // Escape: Cancelar selección
+  if (e.key === 'Escape' && audioStarted && patternEditor) {
+    patternEditor.cancelSelection();
   }
 });
 

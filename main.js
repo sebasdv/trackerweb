@@ -181,31 +181,54 @@ function createExampleSong() {
   // Obtener pattern
   const pattern = song.patterns[0];
 
-  // Agregar algunas notas de ejemplo
+  // Agregar algunas notas de ejemplo mostrando los 8 instrumentos
   // C major scale
   const scale = [60, 62, 64, 65, 67, 69, 71, 72]; // C4 to C5
 
-  // Canal 0: Melodía con square wave
+  // Canal 0: Melodía principal con Square 50% (inst 0)
   for (let i = 0; i < 8; i++) {
     pattern.setNote(i * 4, 0, scale[i], 0, 48);
   }
 
-  // Canal 1: Bajo con square 25%
+  // Canal 1: Bajo con Square 25% (inst 1)
   pattern.setNote(0, 1, 48, 1, 52);  // C3
   pattern.setNote(8, 1, 48, 1, 52);
   pattern.setNote(16, 1, 53, 1, 52); // F3
   pattern.setNote(24, 1, 55, 1, 52); // G3
 
-  // Canal 2: Acordes con triangle
-  pattern.setNote(0, 2, 64, 2, 40);   // E4
-  pattern.setNote(0, 2, 67, 2, 40);   // G4
-  pattern.setNote(16, 2, 65, 2, 40);  // F4
-  pattern.setNote(16, 2, 69, 2, 40);  // A4
+  // Canal 2: Arpegios con Square 12.5% (inst 2)
+  pattern.setNote(0, 2, 72, 2, 40);   // C5
+  pattern.setNote(2, 2, 76, 2, 40);   // E5
+  pattern.setNote(4, 2, 79, 2, 40);   // G5
+  pattern.setNote(6, 2, 76, 2, 40);   // E5
 
-  // Canal 3: Hi-hat con noise
-  for (let i = 0; i < 32; i += 4) {
-    pattern.setNote(i, 3, 60, 4, 30); // Nota irrelevante para noise
+  // Canal 3: Melodía secundaria con Triangle (inst 3)
+  pattern.setNote(16, 3, 65, 3, 45);  // F4
+  pattern.setNote(20, 3, 67, 3, 45);  // G4
+  pattern.setNote(24, 3, 69, 3, 45);  // A4
+  pattern.setNote(28, 3, 67, 3, 45);  // G4
+
+  // Canal 4: Lead agresivo con Sawtooth (inst 4) - opcional
+  pattern.setNote(32, 4, 72, 4, 50);  // C5
+  pattern.setNote(40, 4, 74, 4, 50);  // D5
+  pattern.setNote(48, 4, 76, 4, 50);  // E5
+
+  // Canal 5: Hi-hat con Noise (inst 5)
+  for (let i = 0; i < 64; i += 4) {
+    pattern.setNote(i, 5, 60, 5, 30); // Nota irrelevante para noise
   }
+
+  // Canal 6: Kick drum (inst 6)
+  pattern.setNote(0, 6, 36, 6, 64);   // C2 - kick
+  pattern.setNote(16, 6, 36, 6, 64);
+  pattern.setNote(32, 6, 36, 6, 64);
+  pattern.setNote(48, 6, 36, 6, 64);
+
+  // Canal 7: Snare drum (inst 7)
+  pattern.setNote(8, 7, 38, 7, 55);   // D2 - snare
+  pattern.setNote(24, 7, 38, 7, 55);
+  pattern.setNote(40, 7, 38, 7, 55);
+  pattern.setNote(56, 7, 38, 7, 55);
 }
 
 /**

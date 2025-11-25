@@ -18,12 +18,16 @@ class Song {
     this.speed = 6;        // Ticks por row
     this.channels = 8;     // Número de canales (8 tracks)
 
-    // Instrumentos
+    // Instrumentos - 8 instrumentos optimizados para 8 canales
     this.instruments = [
-      Instrument.PRESETS.SQUARE_50(),
-      Instrument.PRESETS.SQUARE_25(),
-      Instrument.PRESETS.TRIANGLE(),
-      Instrument.PRESETS.SAWTOOTH()
+      Instrument.PRESETS.SQUARE_50(),   // 0: Lead melódico
+      Instrument.PRESETS.SQUARE_25(),   // 1: Bajo gordo
+      Instrument.PRESETS.SQUARE_125(),  // 2: Lead alternativo/arpegios
+      Instrument.PRESETS.TRIANGLE(),    // 3: Bajo suave/melodías
+      Instrument.PRESETS.SAWTOOTH(),    // 4: Lead agresivo
+      Instrument.PRESETS.NOISE(),       // 5: Hi-hat/percusión
+      Instrument.PRESETS.KICK(),        // 6: Kick drum
+      Instrument.PRESETS.SNARE()        // 7: Snare drum
     ];
 
     // Patterns

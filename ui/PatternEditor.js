@@ -318,9 +318,9 @@ class PatternEditor {
     const y = 30 + row * this.cellHeight;
     const x = 40 + this.cursorChannel * this.channelWidth;
 
-    // Highlight de fila (solo si no hay selección activa) - GameBoy Dark con transparencia
+    // Highlight de fila (solo si no hay selección activa) - Negro con transparencia para alto contraste
     if (!this.selectionActive) {
-      fill(15, 56, 15, 120);
+      fill(0, 0, 0, 150);
       noStroke();
       rect(40, y, this.pattern.channels * this.channelWidth, this.cellHeight);
     }

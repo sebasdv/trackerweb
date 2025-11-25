@@ -221,18 +221,32 @@ function loadSong() {
     if (file) {
       try {
         song = await Song.load(file);
+
+        // Resetear índice de pattern actual
+        currentPatternIndex = 0;
+
+        // Actualizar editor con el primer pattern
         patternEditor.setPattern(song.patterns[0], song, audioEngine);
+        patternEditor.cursorRow = 0;
+        patternEditor.setCursorRow(0);
+
+        // Actualizar sequencer
         if (sequencer) {
           sequencer.song = song;
           sequencer.stop();
           controls.setSequencer(sequencer, song);
         }
-        // Actualizar displays
+
+        // Actualizar todos los displays
         updateTempoDisplay();
         updatePatternRowsDisplay();
+        updatePatternInfo();
+        updateOrderDisplay();
+
         console.log('Canción cargada:', song.title);
       } catch (error) {
         console.error('Error cargando canción:', error);
+        alert('Error al cargar el archivo: ' + error.message);
       }
     }
   };

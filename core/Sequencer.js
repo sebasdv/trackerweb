@@ -159,8 +159,13 @@ class Sequencer {
   nextRow() {
     this.currentRow++;
 
+    // Obtener pattern actual para saber su tamaño
+    const patternIndex = this.song.order[this.currentOrder];
+    const pattern = this.song.getPattern(patternIndex);
+    const patternRows = pattern ? pattern.rows : 64;
+
     // Si llegamos al final del pattern
-    if (this.currentRow >= 64) {
+    if (this.currentRow >= patternRows) {
       this.currentRow = 0;
       this.nextOrder();
     }

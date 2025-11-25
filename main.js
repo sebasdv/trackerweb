@@ -16,6 +16,7 @@ let controls;
 
 // Estado
 let audioStarted = false;
+let currentPatternIndex = 0; // Pattern actual en edición
 
 /**
  * Setup de p5.js
@@ -145,8 +146,11 @@ function startAudio() {
 
   audioStarted = true;
 
-  // Inicializar display del tempo
+  // Inicializar displays
   updateTempoDisplay();
+  updatePatternRowsDisplay();
+  updatePatternInfo();
+  updateOrderDisplay();
 
   console.log('Audio iniciado - Edición de notas habilitada');
   console.log('Teclas: Z-M para notas | 0-9 para cambiar octava | Tab para cambiar campo');
@@ -217,12 +221,15 @@ function loadSong() {
     if (file) {
       try {
         song = await Song.load(file);
-        patternEditor.setPattern(song.patterns[0], song);
+        patternEditor.setPattern(song.patterns[0], song, audioEngine);
         if (sequencer) {
           sequencer.song = song;
           sequencer.stop();
           controls.setSequencer(sequencer, song);
         }
+        // Actualizar displays
+        updateTempoDisplay();
+        updatePatternRowsDisplay();
         console.log('Canción cargada:', song.title);
       } catch (error) {
         console.error('Error cargando canción:', error);
@@ -273,6 +280,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Pattern rows selector
+  const patternRowsSelect = document.getElementById('pattern-rows');
+
+  patternRowsSelect.addEventListener('change', (e) => {
+    if (audioStarted && song) {
+      const newRows = parseInt(e.target.value);
+      const currentPattern = song.patterns[0]; // TODO: Soportar múltiples patterns
+
+      if (currentPattern) {
+        currentPattern.resize(newRows);
+
+        // Ajustar cursor si está fuera del nuevo rango
+        if (patternEditor && patternEditor.cursorRow >= newRows) {
+          patternEditor.cursorRow = newRows - 1;
+          patternEditor.setCursorRow(newRows - 1);
+        }
+
+        console.log(`Pattern resized to ${newRows} rows`);
+      }
+    }
+  });
+
   // Botones de reproducción
   const playPauseBtn = document.getElementById('play-pause');
   const stopBtn = document.getElementById('stop');
@@ -297,6 +326,54 @@ document.addEventListener('DOMContentLoaded', () => {
       playPauseBtn.textContent = '▶ Play';
     }
   });
+
+  // Botones de navegación de patterns
+  const patternPrev = document.getElementById('pattern-prev');
+  const patternNext = document.getElementById('pattern-next');
+
+  patternPrev.addEventListener('click', () => {
+    if (audioStarted) {
+      previousPattern();
+    }
+  });
+
+  patternNext.addEventListener('click', () => {
+    if (audioStarted) {
+      nextPattern();
+    }
+  });
+
+  // Botones de acciones de patterns
+  const patternNew = document.getElementById('pattern-new');
+  const patternClone = document.getElementById('pattern-clone');
+  const patternDelete = document.getElementById('pattern-delete');
+
+  patternNew.addEventListener('click', () => {
+    if (audioStarted) {
+      createNewPattern();
+    }
+  });
+
+  patternClone.addEventListener('click', () => {
+    if (audioStarted) {
+      cloneCurrentPattern();
+    }
+  });
+
+  patternDelete.addEventListener('click', () => {
+    if (audioStarted) {
+      deleteCurrentPattern();
+    }
+  });
+
+  // Botón para agregar pattern al order
+  const orderAdd = document.getElementById('order-add');
+
+  orderAdd.addEventListener('click', () => {
+    if (audioStarted) {
+      addPatternToOrder();
+    }
+  });
 });
 
 /**
@@ -317,4 +394,130 @@ function updateTempoDisplay() {
   if (tempoDisplay && song) {
     tempoDisplay.textContent = song.bpm;
   }
+}
+
+/**
+ * Actualiza el selector de tamaño de pattern
+ */
+function updatePatternRowsDisplay() {
+  const patternRowsSelect = document.getElementById('pattern-rows');
+  if (patternRowsSelect && song && song.patterns[currentPatternIndex]) {
+    patternRowsSelect.value = song.patterns[currentPatternIndex].rows;
+  }
+}
+
+/**
+ * Actualiza el display de información del pattern
+ */
+function updatePatternInfo() {
+  const patternInfo = document.getElementById('pattern-info');
+  if (patternInfo && song) {
+    patternInfo.textContent = `Pattern ${currentPatternIndex} / ${song.patterns.length - 1}`;
+  }
+}
+
+/**
+ * Actualiza el display del order
+ */
+function updateOrderDisplay() {
+  const orderList = document.getElementById('order-list');
+  if (orderList && song) {
+    orderList.textContent = song.order.join(', ');
+  }
+}
+
+/**
+ * Cambia al pattern especificado
+ */
+function switchToPattern(index) {
+  if (!song || index < 0 || index >= song.patterns.length) {
+    return;
+  }
+
+  currentPatternIndex = index;
+  const pattern = song.patterns[currentPatternIndex];
+
+  if (patternEditor && audioEngine) {
+    patternEditor.setPattern(pattern, song, audioEngine);
+    // Resetear cursor
+    patternEditor.cursorRow = 0;
+    patternEditor.setCursorRow(0);
+  }
+
+  updatePatternInfo();
+  updatePatternRowsDisplay();
+}
+
+/**
+ * Navega al pattern anterior
+ */
+function previousPattern() {
+  if (currentPatternIndex > 0) {
+    switchToPattern(currentPatternIndex - 1);
+  }
+}
+
+/**
+ * Navega al siguiente pattern
+ */
+function nextPattern() {
+  if (currentPatternIndex < song.patterns.length - 1) {
+    switchToPattern(currentPatternIndex + 1);
+  }
+}
+
+/**
+ * Crea un nuevo pattern
+ */
+function createNewPattern() {
+  if (!song) return;
+
+  // Obtener tamaño del selector
+  const patternRowsSelect = document.getElementById('pattern-rows');
+  const rows = patternRowsSelect ? parseInt(patternRowsSelect.value) : 64;
+
+  const newIndex = song.addPattern(rows);
+  switchToPattern(newIndex);
+  console.log(`Nuevo pattern ${newIndex} creado con ${rows} filas`);
+}
+
+/**
+ * Clona el pattern actual
+ */
+function cloneCurrentPattern() {
+  if (!song) return;
+
+  const clonedIndex = song.clonePattern(currentPatternIndex);
+  if (clonedIndex >= 0) {
+    switchToPattern(clonedIndex);
+    console.log(`Pattern ${currentPatternIndex} clonado a ${clonedIndex}`);
+  }
+}
+
+/**
+ * Elimina el pattern actual
+ */
+function deleteCurrentPattern() {
+  if (!song) return;
+
+  const success = song.deletePattern(currentPatternIndex);
+  if (success) {
+    // Cambiar a pattern anterior o siguiente
+    const newIndex = Math.min(currentPatternIndex, song.patterns.length - 1);
+    switchToPattern(newIndex);
+    console.log(`Pattern eliminado`);
+  } else {
+    console.warn('No se pudo eliminar el pattern (puede estar en uso en el order)');
+  }
+}
+
+/**
+ * Agrega el pattern actual al order
+ */
+function addPatternToOrder() {
+  if (!song) return;
+
+  song.addToOrder(currentPatternIndex);
+  updateOrderDisplay();
+  console.log(`Pattern ${currentPatternIndex} agregado al order`);
 }

@@ -69,13 +69,15 @@ header p {
 }
 
 #tempo-controls,
+#pattern-controls,
 #playback-controls {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-#tempo-controls label {
+#tempo-controls label,
+#pattern-controls label {
   color: #aaa;
   font-size: 0.9em;
   margin-right: 5px;
@@ -94,7 +96,7 @@ header p {
   font-size: 1em;
 }
 
-/* Buttons */
+/* Buttons and Select */
 .btn {
   padding: 8px 16px;
   background: #2a2a3e;
@@ -106,6 +108,16 @@ header p {
   font-size: 0.9em;
   transition: all 0.2s ease;
   outline: none;
+}
+
+select.btn {
+  padding: 8px 12px;
+  min-width: 70px;
+}
+
+select.btn:hover {
+  background: #3a3a4e;
+  border-color: #555;
 }
 
 .btn:hover {
@@ -129,6 +141,57 @@ header p {
 .btn-primary:hover {
   background: #00c8ec;
   border-color: #00c8ec;
+}
+
+/* Pattern Manager */
+#pattern-manager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 10px;
+  padding: 10px 15px;
+  background: #151525;
+  border: 1px solid #333;
+  border-radius: 6px;
+}
+
+#pattern-nav,
+#pattern-actions,
+#order-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#pattern-info {
+  min-width: 120px;
+  text-align: center;
+  color: #00d9ff;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+#order-display label {
+  color: #aaa;
+  font-size: 0.9em;
+}
+
+#order-list {
+  color: #e0e0e0;
+  background: #0a0a0a;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  font-size: 0.85em;
+  min-width: 100px;
+  display: inline-block;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.85em;
 }
 
 /* Canvas container */

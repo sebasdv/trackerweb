@@ -24,9 +24,36 @@
         <span id="tempo-display">125</span>
         <button id="tempo-up" class="btn">+</button>
       </div>
+      <div id="pattern-controls">
+        <label>Pattern Rows:</label>
+        <select id="pattern-rows" class="btn">
+          <option value="16">16</option>
+          <option value="32">32</option>
+          <option value="64" selected>64</option>
+          <option value="128">128</option>
+        </select>
+      </div>
       <div id="playback-controls">
         <button id="play-pause" class="btn btn-primary">▶ Play</button>
         <button id="stop" class="btn">⏹ Stop</button>
+      </div>
+    </div>
+
+    <div id="pattern-manager">
+      <div id="pattern-nav">
+        <button id="pattern-prev" class="btn btn-sm">◀</button>
+        <span id="pattern-info">Pattern 0 / 0</span>
+        <button id="pattern-next" class="btn btn-sm">▶</button>
+      </div>
+      <div id="pattern-actions">
+        <button id="pattern-new" class="btn btn-sm">+ New</button>
+        <button id="pattern-clone" class="btn btn-sm">Clone</button>
+        <button id="pattern-delete" class="btn btn-sm">Delete</button>
+      </div>
+      <div id="order-display">
+        <label>Order:</label>
+        <span id="order-list">0</span>
+        <button id="order-add" class="btn btn-sm">+ Add</button>
       </div>
     </div>
 

@@ -29,9 +29,9 @@ class PatternEditor {
     this.scrollRow = 0;
     this.visibleRows = 16;
 
-    // Dimensiones de celda
+    // Dimensiones de celda (ajustadas para 8 canales)
     this.cellHeight = 20;
-    this.channelWidth = 140;
+    this.channelWidth = 100; // Reducido para acomodar 8 canales
 
     // Referencias
     this.pattern = null;
@@ -240,24 +240,24 @@ class PatternEditor {
     const noteStr = this.formatNote(cell.note);
     text(noteStr, x, y);
 
-    // Instrumento
+    // Instrumento (ajustado para 8 canales)
     const instStr = cell.instrument !== null
       ? cell.instrument.toString(16).toUpperCase().padStart(2, '0')
       : '..';
-    text(instStr, x + 35, y);
+    text(instStr, x + 27, y);
 
-    // Volumen
+    // Volumen (ajustado para 8 canales)
     const volStr = cell.volume !== null
       ? cell.volume.toString(16).toUpperCase().padStart(2, '0')
       : '..';
-    text(volStr, x + 60, y);
+    text(volStr, x + 47, y);
 
-    // Efecto
+    // Efecto (ajustado para 8 canales)
     if (cell.effect !== 0x0 || cell.effectParam !== 0x0) {
       const fxStr = Effects.format(cell.effect, cell.effectParam);
-      text(fxStr, x + 85, y);
+      text(fxStr, x + 67, y);
     } else {
-      text('...', x + 85, y);
+      text('...', x + 67, y);
     }
   }
 
@@ -321,8 +321,9 @@ class PatternEditor {
     const x = 40 + this.cursorChannel * this.channelWidth;
 
     // Solo mostrar el cursor del campo (sin highlight de fila completa)
-    const fieldOffsets = [0, 35, 60, 85, 95];
-    const fieldWidths = [30, 20, 20, 10, 20];
+    // Offsets y anchos ajustados para channelWidth de 100px
+    const fieldOffsets = [0, 27, 47, 67, 78];
+    const fieldWidths = [25, 18, 18, 10, 17];
     const fieldX = x + fieldOffsets[this.cursorField] + 5;
     const fieldW = fieldWidths[this.cursorField];
 

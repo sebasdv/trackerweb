@@ -16,14 +16,16 @@ class AudioEngine {
     this.masterGain.gain.value = 0.3; // Volumen moderado por defecto
     this.masterGain.connect(this.context.destination);
 
-    // Canales de audio (típicamente 4)
+    // Canales de audio (8 canales)
     this.channels = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 8; i++) {
       this.channels.push({
         gain: this.createChannelGain(),
         currentNote: null,
         oscillator: null,
-        envelope: null
+        envelope: null,
+        filter: null,  // SVF filter (BiquadFilterNode)
+        lfo: null      // LFO oscillator
       });
     }
 
@@ -133,7 +135,7 @@ class AudioEngine {
 
   /**
    * Reproduce una nota en un canal específico
-   * @param {number} channel - Canal (0-3)
+   * @param {number} channel - Canal (0-7)
    * @param {number} note - Nota MIDI
    * @param {Instrument} instrument - Instrumento a usar
    * @param {number} volume - Volumen (0-64)
@@ -148,6 +150,7 @@ class AudioEngine {
 
     const ch = this.channels[channel];
     const frequency = this.noteToFrequency(note);
+    const now = this.context.currentTime;
 
     // Crear oscilador
     const osc = this.createOscillator(
@@ -160,15 +163,76 @@ class AudioEngine {
     const envelope = this.context.createGain();
     envelope.gain.value = 0;
 
-    // Conectar: oscilador -> envelope -> canal gain
-    osc.connect(envelope);
+    // Crear cadena de audio: oscilador -> filter (opcional) -> envelope -> canal gain
+    let audioChain = osc;
+
+    // SVF Filter (si está habilitado)
+    if (instrument.filter && instrument.filter.enabled) {
+      const filter = this.context.createBiquadFilter();
+      filter.type = instrument.filter.type;
+      filter.frequency.value = instrument.filter.cutoff;
+      filter.Q.value = instrument.filter.resonance;
+
+      // Conectar en la cadena
+      osc.connect(filter);
+      filter.connect(envelope);
+      audioChain = filter;
+
+      // Guardar referencia al filter
+      ch.filter = filter;
+    } else {
+      // Sin filter, conexión directa
+      osc.connect(envelope);
+      ch.filter = null;
+    }
+
     envelope.connect(ch.gain);
+
+    // LFO (Low Frequency Oscillator) para modulación
+    if (instrument.lfo && instrument.lfo.enabled) {
+      const lfo = this.context.createOscillator();
+      lfo.type = instrument.lfo.waveform;
+      lfo.frequency.value = instrument.lfo.rate;
+
+      const lfoGain = this.context.createGain();
+      lfoGain.gain.value = instrument.lfo.depth;
+
+      lfo.connect(lfoGain);
+
+      // Conectar LFO según el target
+      switch (instrument.lfo.target) {
+        case 'pitch':
+          // Modular frecuencia del oscilador
+          if (osc.frequency) {
+            lfoGain.connect(osc.frequency);
+          }
+          break;
+
+        case 'filter':
+          // Modular cutoff del filtro (si existe)
+          if (ch.filter && ch.filter.frequency) {
+            lfoGain.gain.value = instrument.lfo.depth * 1000; // Escalar para Hz
+            lfoGain.connect(ch.filter.frequency);
+          }
+          break;
+
+        case 'volume':
+          // Modular volumen del envelope
+          lfoGain.gain.value = instrument.lfo.depth * 0.5;
+          lfoGain.connect(envelope.gain);
+          break;
+      }
+
+      lfo.start(now);
+      ch.lfo = lfo;
+    } else {
+      ch.lfo = null;
+    }
 
     // Calcular volumen final
     const finalVolume = (volume / 64) * instrument.volume;
 
     // Aplicar ADSR envelope
-    const now = this.context.currentTime;
     const { attack, decay, sustain, release } = instrument.envelope;
 
     // Attack
@@ -192,7 +256,7 @@ class AudioEngine {
 
   /**
    * Detiene la nota en un canal
-   * @param {number} channel - Canal (0-3)
+   * @param {number} channel - Canal (0-7)
    */
   stopNote(channel) {
     if (channel < 0 || channel >= this.channels.length) {
@@ -215,10 +279,17 @@ class AudioEngine {
     // Detener oscilador después del release
     ch.oscillator.stop(now + release);
 
+    // Detener LFO si existe
+    if (ch.lfo) {
+      ch.lfo.stop(now + release);
+    }
+
     // Limpiar referencias
     ch.oscillator = null;
     ch.envelope = null;
     ch.currentNote = null;
+    ch.filter = null;
+    ch.lfo = null;
   }
 
   /**
@@ -258,7 +329,7 @@ class AudioEngine {
 
   /**
    * Establece la frecuencia de un canal en tiempo real (para efectos)
-   * @param {number} channel - Canal (0-3)
+   * @param {number} channel - Canal (0-7)
    * @param {number} frequency - Frecuencia en Hz
    */
   setChannelFrequency(channel, frequency) {
@@ -275,7 +346,7 @@ class AudioEngine {
 
   /**
    * Establece el volumen de un canal en tiempo real (para efectos)
-   * @param {number} channel - Canal (0-3)
+   * @param {number} channel - Canal (0-7)
    * @param {number} volume - Volumen normalizado (0-1)
    */
   setChannelVolume(channel, volume) {

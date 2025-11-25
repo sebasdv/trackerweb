@@ -39,6 +39,40 @@
           <option value="128">128</option>
         </select>
       </div>
+      <div id="scale-controls">
+        <label>Key:</label>
+        <select id="root-note" class="btn">
+          <option value="0">C</option>
+          <option value="1">C#</option>
+          <option value="2">D</option>
+          <option value="3">D#</option>
+          <option value="4">E</option>
+          <option value="5">F</option>
+          <option value="6">F#</option>
+          <option value="7">G</option>
+          <option value="8">G#</option>
+          <option value="9">A</option>
+          <option value="10">A#</option>
+          <option value="11">B</option>
+        </select>
+        <select id="scale-select" class="btn">
+          <option value="Chromatic">Chromatic</option>
+          <option value="Major">Major</option>
+          <option value="Minor">Minor</option>
+          <option value="Dorian">Dorian</option>
+          <option value="Phrygian">Phrygian</option>
+          <option value="Lydian">Lydian</option>
+          <option value="Mixolydian">Mixolydian</option>
+          <option value="Pentatonic Major">Pentatonic Major</option>
+          <option value="Pentatonic Minor">Pentatonic Minor</option>
+          <option value="Blues">Blues</option>
+          <option value="Harmonic Minor">Harmonic Minor</option>
+        </select>
+        <label>
+          <input type="checkbox" id="snap-to-scale" class="btn">
+          Snap
+        </label>
+      </div>
       <div id="playback-controls">
         <button id="play-pause" class="btn btn-primary">▶ Play</button>
         <button id="stop" class="btn">⏹ Stop</button>
@@ -71,6 +105,7 @@
   </div>
 
   <!-- Data structures -->
+  <script src="data/Scale.js"></script>
   <script src="data/Instrument.js"></script>
   <script src="data/Pattern.js"></script>
   <script src="data/Song.js"></script>

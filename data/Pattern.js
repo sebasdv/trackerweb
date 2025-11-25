@@ -6,10 +6,10 @@
 class Pattern {
   /**
    * Crea un nuevo pattern
-   * @param {number} channels - Número de canales (típicamente 4)
+   * @param {number} channels - Número de canales (típicamente 8)
    * @param {number} rows - Número de filas (típicamente 64)
    */
-  constructor(channels = 4, rows = 64) {
+  constructor(channels = 8, rows = 64) {
     this.channels = channels;
     this.rows = rows;
     this.data = [];
@@ -41,7 +41,7 @@ class Pattern {
   /**
    * Obtiene una celda del pattern
    * @param {number} row - Fila (0-63)
-   * @param {number} channel - Canal (0-3)
+   * @param {number} channel - Canal (0-7)
    * @returns {Object} Celda
    */
   getCell(row, channel) {

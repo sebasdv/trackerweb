@@ -16,14 +16,16 @@ class AudioEngine {
     this.masterGain.gain.value = 0.3; // Volumen moderado por defecto
     this.masterGain.connect(this.context.destination);
 
-    // Canales de audio (típicamente 4)
+    // Canales de audio (8 canales)
     this.channels = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 8; i++) {
       this.channels.push({
         gain: this.createChannelGain(),
         currentNote: null,
         oscillator: null,
-        envelope: null
+        envelope: null,
+        filter: null,  // SVF filter (BiquadFilterNode)
+        lfo: null      // LFO oscillator
       });
     }
 
@@ -133,7 +135,7 @@ class AudioEngine {
 
   /**
    * Reproduce una nota en un canal específico
-   * @param {number} channel - Canal (0-3)
+   * @param {number} channel - Canal (0-7)
    * @param {number} note - Nota MIDI
    * @param {Instrument} instrument - Instrumento a usar
    * @param {number} volume - Volumen (0-64)
@@ -192,7 +194,7 @@ class AudioEngine {
 
   /**
    * Detiene la nota en un canal
-   * @param {number} channel - Canal (0-3)
+   * @param {number} channel - Canal (0-7)
    */
   stopNote(channel) {
     if (channel < 0 || channel >= this.channels.length) {
@@ -258,7 +260,7 @@ class AudioEngine {
 
   /**
    * Establece la frecuencia de un canal en tiempo real (para efectos)
-   * @param {number} channel - Canal (0-3)
+   * @param {number} channel - Canal (0-7)
    * @param {number} frequency - Frecuencia en Hz
    */
   setChannelFrequency(channel, frequency) {
@@ -275,7 +277,7 @@ class AudioEngine {
 
   /**
    * Establece el volumen de un canal en tiempo real (para efectos)
-   * @param {number} channel - Canal (0-3)
+   * @param {number} channel - Canal (0-7)
    * @param {number} volume - Volumen normalizado (0-1)
    */
   setChannelVolume(channel, volume) {

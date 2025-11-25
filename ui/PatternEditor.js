@@ -320,14 +320,7 @@ class PatternEditor {
     const y = 30 + row * this.cellHeight;
     const x = 40 + this.cursorChannel * this.channelWidth;
 
-    // Highlight de fila (solo si no hay selección activa) - Negro puro con transparencia
-    if (!this.selectionActive) {
-      fill(0, 0, 0, 150);
-      noStroke();
-      rect(40, y, this.pattern.channels * this.channelWidth, this.cellHeight);
-    }
-
-    // Cursor específico del campo - Verde claro brillante
+    // Solo mostrar el cursor del campo (sin highlight de fila completa)
     const fieldOffsets = [0, 35, 60, 85, 95];
     const fieldWidths = [30, 20, 20, 10, 20];
     const fieldX = x + fieldOffsets[this.cursorField] + 5;

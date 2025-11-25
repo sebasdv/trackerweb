@@ -113,8 +113,8 @@ class PatternEditor {
     push();
     translate(this.x, this.y);
 
-    // Fondo - GameBoy Dark
-    fill(15, 56, 15);
+    // Fondo - GameBoy Accent (más claro para mejor contraste)
+    fill(48, 98, 48);
     noStroke();
     rect(0, 0, this.width, this.height);
 
@@ -143,18 +143,18 @@ class PatternEditor {
    * Renderiza el header con números de canal
    */
   renderHeader() {
-    // Header background - GameBoy Accent
-    fill(48, 98, 48);
+    // Header background - GameBoy Dark para alto contraste
+    fill(15, 56, 15);
     noStroke();
     rect(0, 0, this.width, 30);
 
-    // Info de pattern (tamaño) - GameBoy Medium
-    fill(139, 172, 15);
+    // Info de pattern (tamaño) - GameBoy Light (muy visible)
+    fill(155, 188, 15);
     textSize(11);
     textAlign(LEFT, CENTER);
     text(`${this.pattern.rows} rows`, 5, 15);
 
-    // Canales - GameBoy Light
+    // Canales - GameBoy Light (muy visible)
     fill(155, 188, 15);
     textSize(12);
     textAlign(CENTER, CENTER);
@@ -169,8 +169,8 @@ class PatternEditor {
    * Renderiza el grid
    */
   renderGrid() {
-    // Grid lines - GameBoy Accent (darker)
-    stroke(48, 98, 48);
+    // Grid lines - GameBoy Dark para más contraste
+    stroke(15, 56, 15);
     strokeWeight(1);
 
     const startRow = this.scrollRow;
@@ -283,8 +283,8 @@ class PatternEditor {
 
     const selRect = this.getSelectionRect();
 
-    // Highlight de selección - GameBoy Medium with alpha
-    fill(139, 172, 15, 80);
+    // Highlight de selección - GameBoy Light con transparencia para alta visibilidad
+    fill(155, 188, 15, 100);
     noStroke();
 
     for (let row = selRect.startRow; row <= selRect.endRow; row++) {
@@ -315,9 +315,9 @@ class PatternEditor {
     const y = 30 + row * this.cellHeight;
     const x = 40 + this.cursorChannel * this.channelWidth;
 
-    // Highlight de fila (solo si no hay selección activa) - GameBoy Accent with alpha
+    // Highlight de fila (solo si no hay selección activa) - GameBoy Dark con transparencia
     if (!this.selectionActive) {
-      fill(48, 98, 48, 100);
+      fill(15, 56, 15, 120);
       noStroke();
       rect(40, y, this.pattern.channels * this.channelWidth, this.cellHeight);
     }
@@ -338,12 +338,12 @@ class PatternEditor {
    * Renderiza información de edición (octava, instrumento)
    */
   renderEditInfo() {
-    // Fondo para info - GameBoy Accent
-    fill(48, 98, 48);
+    // Fondo para info - GameBoy Dark para alto contraste
+    fill(15, 56, 15);
     noStroke();
     rect(this.width - 180, 5, 175, 20);
 
-    // Texto de info - GameBoy Light
+    // Texto de info - GameBoy Light (muy visible)
     fill(155, 188, 15);
     textSize(12);
     textAlign(LEFT, CENTER);

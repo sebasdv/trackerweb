@@ -98,21 +98,52 @@ Instrument.PRESETS = {
   SQUARE_50: () => {
     const inst = new Instrument('Square 50%', 'pulse');
     inst.dutyCycle = 0.5;
+    inst.envelope.attack = 0.01;
+    inst.envelope.decay = 0.05;
+    inst.envelope.sustain = 0.7;
+    inst.envelope.release = 0.1;
     return inst;
   },
 
   SQUARE_25: () => {
     const inst = new Instrument('Square 25%', 'pulse');
     inst.dutyCycle = 0.25;
+    inst.envelope.attack = 0.01;
+    inst.envelope.decay = 0.1;
+    inst.envelope.sustain = 0.8;
+    inst.envelope.release = 0.15;
+    return inst;
+  },
+
+  SQUARE_125: () => {
+    const inst = new Instrument('Square 12.5%', 'pulse');
+    inst.dutyCycle = 0.125;
+    inst.envelope.attack = 0.005;
+    inst.envelope.decay = 0.03;
+    inst.envelope.sustain = 0.6;
+    inst.envelope.release = 0.08;
+    inst.volume = 0.45;
     return inst;
   },
 
   TRIANGLE: () => {
-    return new Instrument('Triangle', 'triangle');
+    const inst = new Instrument('Triangle', 'triangle');
+    inst.envelope.attack = 0.02;
+    inst.envelope.decay = 0.08;
+    inst.envelope.sustain = 0.75;
+    inst.envelope.release = 0.15;
+    inst.volume = 0.6;
+    return inst;
   },
 
   SAWTOOTH: () => {
-    return new Instrument('Sawtooth', 'sawtooth');
+    const inst = new Instrument('Sawtooth', 'sawtooth');
+    inst.envelope.attack = 0.005;
+    inst.envelope.decay = 0.04;
+    inst.envelope.sustain = 0.65;
+    inst.envelope.release = 0.1;
+    inst.volume = 0.5;
+    return inst;
   },
 
   NOISE: () => {
@@ -121,6 +152,33 @@ Instrument.PRESETS = {
     inst.envelope.decay = 0.02;
     inst.envelope.sustain = 0.3;
     inst.envelope.release = 0.02;
+    inst.volume = 0.4;
+    return inst;
+  },
+
+  KICK: () => {
+    const inst = new Instrument('Kick Drum', 'triangle');
+    inst.envelope.attack = 0.001;
+    inst.envelope.decay = 0.15;
+    inst.envelope.sustain = 0.0;
+    inst.envelope.release = 0.05;
+    inst.volume = 0.8;
+    // El kick se toca típicamente en notas bajas (C1-C2)
+    return inst;
+  },
+
+  SNARE: () => {
+    const inst = new Instrument('Snare Drum', 'noise');
+    inst.envelope.attack = 0.001;
+    inst.envelope.decay = 0.08;
+    inst.envelope.sustain = 0.1;
+    inst.envelope.release = 0.05;
+    inst.volume = 0.5;
+    // Filtro para dar carácter
+    inst.filter.enabled = true;
+    inst.filter.type = 'highpass';
+    inst.filter.cutoff = 800;
+    inst.filter.resonance = 2.0;
     return inst;
   }
 };

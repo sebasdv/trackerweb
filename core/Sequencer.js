@@ -26,8 +26,12 @@ class Sequencer {
     // Procesador de efectos
     this.effectProcessor = new EffectProcessor(audioEngine);
 
-    // Efectos activos por canal (para procesamiento continuo)
+    // Efectos activos por canal (para procesamiento continuo) - 8 canales
     this.activeEffects = [
+      { effect: 0x0, param: 0x0 },
+      { effect: 0x0, param: 0x0 },
+      { effect: 0x0, param: 0x0 },
+      { effect: 0x0, param: 0x0 },
       { effect: 0x0, param: 0x0 },
       { effect: 0x0, param: 0x0 },
       { effect: 0x0, param: 0x0 },

@@ -66,9 +66,9 @@ class EffectProcessor {
   constructor(audioEngine) {
     this.audioEngine = audioEngine;
 
-    // Estado por canal
+    // Estado por canal (8 canales)
     this.channels = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 8; i++) {
       this.channels.push({
         // Estado general
         note: null,          // Nota actual

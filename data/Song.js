@@ -16,7 +16,7 @@ class Song {
     // Configuración de reproducción
     this.bpm = 125;        // Beats por minuto
     this.speed = 6;        // Ticks por row
-    this.channels = 4;     // Número de canales
+    this.channels = 8;     // Número de canales (8 tracks)
 
     // Instrumentos
     this.instruments = [
@@ -201,7 +201,7 @@ class Song {
     const song = new Song(data.title, data.author);
     song.bpm = data.bpm || 125;
     song.speed = data.speed || 6;
-    song.channels = data.channels || 4;
+    song.channels = data.channels || 8;
 
     song.instruments = data.instruments.map(inst => Instrument.fromJSON(inst));
     song.patterns = data.patterns.map(pat => Pattern.fromJSON(pat));

@@ -163,6 +163,7 @@ function startAudio() {
   // Inicializar displays
   updateTempoDisplay();
   updatePatternRowsDisplay();
+  updateScaleDisplay();
   updatePatternInfo();
   updateOrderDisplay();
 
@@ -277,6 +278,7 @@ function loadSong() {
         // Actualizar todos los displays
         updateTempoDisplay();
         updatePatternRowsDisplay();
+        updateScaleDisplay();
         updatePatternInfo();
         updateOrderDisplay();
 
@@ -398,6 +400,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Scale controls
+  const rootNoteSelect = document.getElementById('root-note');
+  const scaleSelect = document.getElementById('scale-select');
+  const snapToScaleCheckbox = document.getElementById('snap-to-scale');
+
+  rootNoteSelect.addEventListener('change', (e) => {
+    if (audioStarted && song) {
+      song.rootNote = parseInt(e.target.value);
+      const noteName = Scale.NOTE_NAMES[song.rootNote];
+      console.log(`Root note changed to: ${noteName}`);
+    }
+  });
+
+  scaleSelect.addEventListener('change', (e) => {
+    if (audioStarted && song) {
+      song.scale = e.target.value;
+      console.log(`Scale changed to: ${song.scale}`);
+    }
+  });
+
+  snapToScaleCheckbox.addEventListener('change', (e) => {
+    if (audioStarted && song) {
+      song.snapToScale = e.target.checked;
+      console.log(`Snap to scale: ${song.snapToScale ? 'ON' : 'OFF'}`);
+    }
+  });
+
   // Botones de reproducción
   const playPauseBtn = document.getElementById('play-pause');
   const stopBtn = document.getElementById('stop');
@@ -499,6 +528,25 @@ function updatePatternRowsDisplay() {
   const patternRowsSelect = document.getElementById('pattern-rows');
   if (patternRowsSelect && song && song.patterns[currentPatternIndex]) {
     patternRowsSelect.value = song.patterns[currentPatternIndex].rows;
+  }
+}
+
+/**
+ * Actualiza los controles de escala
+ */
+function updateScaleDisplay() {
+  const rootNoteSelect = document.getElementById('root-note');
+  const scaleSelect = document.getElementById('scale-select');
+  const snapToScaleCheckbox = document.getElementById('snap-to-scale');
+
+  if (rootNoteSelect && song) {
+    rootNoteSelect.value = song.rootNote;
+  }
+  if (scaleSelect && song) {
+    scaleSelect.value = song.scale;
+  }
+  if (snapToScaleCheckbox && song) {
+    snapToScaleCheckbox.checked = song.snapToScale;
   }
 }
 

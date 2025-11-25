@@ -63,14 +63,25 @@ class AudioEngine {
 
   /**
    * Crea un oscilador según el tipo de waveform
-   * @param {string} waveform - Tipo de onda (pulse, triangle, sawtooth, noise)
+   * @param {string} waveform - Tipo de onda (pulse, triangle, sawtooth, noise, fm, karplus, formant)
    * @param {number} frequency - Frecuencia en Hz
    * @param {number} dutyCycle - Duty cycle para pulse wave (0-1)
-   * @returns {OscillatorNode|AudioBufferSourceNode} Oscilador
+   * @param {Object} params - Parámetros adicionales para síntesis avanzada
+   * @returns {OscillatorNode|AudioBufferSourceNode|Object} Oscilador o estructura compleja
    */
-  createOscillator(waveform, frequency, dutyCycle = 0.5) {
+  createOscillator(waveform, frequency, dutyCycle = 0.5, params = {}) {
     if (waveform === 'noise') {
       return this.createNoiseSource();
+    }
+
+    // Síntesis FM (2-operator)
+    if (waveform === 'fm') {
+      return this.createFMOscillator(frequency, params);
+    }
+
+    // Karplus-Strong (string synthesis)
+    if (waveform === 'karplus') {
+      return this.createKarplusStrongOscillator(frequency, params);
     }
 
     const osc = this.context.createOscillator();
@@ -134,6 +145,192 @@ class AudioEngine {
   }
 
   /**
+   * Crea un oscilador FM (2-operator)
+   * @param {number} carrierFreq - Frecuencia carrier en Hz
+   * @param {Object} params - Parámetros: { ratio, index, feedback }
+   * @returns {Object} Estructura FM con carrier, modulator y gainNode de salida
+   */
+  createFMOscillator(carrierFreq, params = {}) {
+    const ratio = params.ratio || 1.0;      // Ratio modulador/carrier (default 1:1)
+    const index = params.index || 2.0;      // Índice de modulación (intensidad)
+    const feedback = params.feedback || 0;  // Feedback del modulador (0-1)
+
+    // Oscilador carrier (portadora)
+    const carrier = this.context.createOscillator();
+    carrier.type = 'sine';
+    carrier.frequency.value = carrierFreq;
+
+    // Oscilador modulator
+    const modulator = this.context.createOscillator();
+    modulator.type = 'sine';
+    modulator.frequency.value = carrierFreq * ratio;
+
+    // Gain para el índice de modulación
+    const modulationGain = this.context.createGain();
+    modulationGain.gain.value = carrierFreq * index;
+
+    // Conectar: modulator -> modulationGain -> carrier.frequency
+    modulator.connect(modulationGain);
+    modulationGain.connect(carrier.frequency);
+
+    // Feedback del modulador (opcional)
+    if (feedback > 0) {
+      const feedbackGain = this.context.createGain();
+      feedbackGain.gain.value = feedback;
+      const feedbackDelay = this.context.createDelay(0.01);
+      feedbackDelay.delayTime.value = 1 / modulator.frequency.value;
+
+      modulator.connect(feedbackDelay);
+      feedbackDelay.connect(feedbackGain);
+      feedbackGain.connect(modulator.frequency);
+    }
+
+    // Estructura de retorno
+    return {
+      type: 'fm',
+      carrier: carrier,
+      modulator: modulator,
+      output: carrier,
+      start: (time) => {
+        modulator.start(time);
+        carrier.start(time);
+      },
+      stop: (time) => {
+        modulator.stop(time);
+        carrier.stop(time);
+      },
+      frequency: carrier.frequency  // Para modulación externa
+    };
+  }
+
+  /**
+   * Crea un oscilador Karplus-Strong (string synthesis)
+   * @param {number} frequency - Frecuencia fundamental en Hz
+   * @param {Object} params - Parámetros: { damping, brightness }
+   * @returns {Object} Estructura KS con noise, delay y output
+   */
+  createKarplusStrongOscillator(frequency, params = {}) {
+    const damping = params.damping || 0.99;      // Factor de amortiguamiento (0-1)
+    const brightness = params.brightness || 0.5;  // Brillo del sonido (0-1)
+
+    // Burst de ruido para excitación
+    const burstLength = 0.01; // 10ms burst
+    const bufferSize = Math.floor(this.context.sampleRate * burstLength);
+    const buffer = this.context.createBuffer(1, bufferSize, this.context.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / bufferSize * 5);
+    }
+
+    const burst = this.context.createBufferSource();
+    burst.buffer = buffer;
+
+    // Delay line (determina el pitch)
+    const delayTime = 1 / frequency;
+    const delay = this.context.createDelay(1.0);
+    delay.delayTime.value = delayTime;
+
+    // Feedback gain (damping)
+    const feedback = this.context.createGain();
+    feedback.gain.value = damping;
+
+    // Filtro de amortiguamiento (simula pérdida de armónicos)
+    const dampingFilter = this.context.createBiquadFilter();
+    dampingFilter.type = 'lowpass';
+    dampingFilter.frequency.value = frequency * (1 + brightness * 10);
+    dampingFilter.Q.value = 0.5;
+
+    // Conexiones: burst -> delay -> filter -> feedback -> delay
+    burst.connect(delay);
+    delay.connect(dampingFilter);
+    dampingFilter.connect(feedback);
+    feedback.connect(delay);
+
+    // Salida
+    const output = this.context.createGain();
+    output.gain.value = 0.5;
+    dampingFilter.connect(output);
+
+    return {
+      type: 'karplus',
+      burst: burst,
+      delay: delay,
+      output: output,
+      start: (time) => {
+        burst.start(time);
+      },
+      stop: (time) => {
+        // Karplus-Strong decae naturalmente, no necesita stop explícito
+      },
+      frequency: {
+        value: frequency,
+        setValueAtTime: (freq, time) => {
+          delay.delayTime.setValueAtTime(1 / freq, time);
+        }
+      }
+    };
+  }
+
+  /**
+   * Crea filtros formantes para síntesis de vocales
+   * @param {OscillatorNode} source - Oscilador fuente
+   * @param {string} vowel - Vocal: 'a', 'e', 'i', 'o', 'u'
+   * @returns {GainNode} Nodo de salida con formantes aplicados
+   */
+  createFormantFilter(source, vowel = 'a') {
+    // Frecuencias formantes aproximadas (F1, F2, F3) para cada vocal
+    const formants = {
+      'a': [730, 1090, 2440],
+      'e': [530, 1840, 2480],
+      'i': [290, 2250, 2890],
+      'o': [490, 880, 2540],
+      'u': [350, 870, 2250]
+    };
+
+    const freqs = formants[vowel] || formants['a'];
+    const output = this.context.createGain();
+    output.gain.value = 0.3;
+
+    // Crear 3 filtros bandpass para los 3 formantes
+    let currentNode = source;
+    for (let i = 0; i < 3; i++) {
+      const filter = this.context.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = freqs[i];
+      filter.Q.value = 10;  // Resonancia alta para formantes definidos
+
+      currentNode.connect(filter);
+      filter.connect(output);
+      currentNode = filter;
+    }
+
+    return output;
+  }
+
+  /**
+   * Crea un wavefolder para distorsión armónica
+   * @returns {WaveShaperNode} Nodo waveshaper con curva de fold
+   */
+  createWavefolder() {
+    const waveshaper = this.context.createWaveShaper();
+    const samples = 1024;
+    const curve = new Float32Array(samples);
+
+    // Función de wavefold (pliegue de onda)
+    for (let i = 0; i < samples; i++) {
+      const x = (i / samples) * 2 - 1;  // -1 a 1
+      // Fold: refleja la onda cuando excede ±1
+      const folded = Math.abs((x % 4 + 4) % 4 - 2) - 1;
+      curve[i] = Math.tanh(folded * 2);  // Soft clipping adicional
+    }
+
+    waveshaper.curve = curve;
+    waveshaper.oversample = '4x';  // Oversampling para reducir aliasing
+    return waveshaper;
+  }
+
+  /**
    * Reproduce una nota en un canal específico
    * @param {number} channel - Canal (0-7)
    * @param {number} note - Nota MIDI
@@ -152,19 +349,52 @@ class AudioEngine {
     const frequency = this.noteToFrequency(note);
     const now = this.context.currentTime;
 
-    // Crear oscilador
+    // Parámetros para síntesis avanzada
+    const params = {
+      // FM
+      ratio: instrument.fmRatio || 1.0,
+      index: instrument.fmIndex || 2.0,
+      feedback: instrument.fmFeedback || 0,
+      // Karplus-Strong
+      damping: instrument.ksDamping || 0.99,
+      brightness: instrument.ksBrightness || 0.5,
+      // Formant
+      vowel: instrument.vowel || 'a'
+    };
+
+    // Crear oscilador (puede ser simple o complejo)
     const osc = this.createOscillator(
       instrument.waveform,
       frequency,
-      instrument.dutyCycle
+      instrument.dutyCycle,
+      params
     );
 
     // Crear envelope (ADSR)
     const envelope = this.context.createGain();
     envelope.gain.value = 0;
 
-    // Crear cadena de audio: oscilador -> filter (opcional) -> envelope -> canal gain
-    let audioChain = osc;
+    // Determinar el nodo de salida del oscilador
+    let oscOutput;
+    if (osc.output) {
+      // Oscilador complejo (FM, Karplus-Strong)
+      oscOutput = osc.output;
+    } else {
+      // Oscilador simple
+      oscOutput = osc;
+    }
+
+    // Aplicar wavefolder si está habilitado
+    let audioChain = oscOutput;
+    if (instrument.wavefold && instrument.wavefold > 0) {
+      const wavefolder = this.createWavefolder();
+      const foldGain = this.context.createGain();
+      foldGain.gain.value = 1 + instrument.wavefold * 3;  // Aumentar gain para folding
+
+      oscOutput.connect(foldGain);
+      foldGain.connect(wavefolder);
+      audioChain = wavefolder;
+    }
 
     // SVF Filter (si está habilitado)
     if (instrument.filter && instrument.filter.enabled) {
@@ -174,7 +404,7 @@ class AudioEngine {
       filter.Q.value = instrument.filter.resonance;
 
       // Conectar en la cadena
-      osc.connect(filter);
+      audioChain.connect(filter);
       filter.connect(envelope);
       audioChain = filter;
 
@@ -182,7 +412,7 @@ class AudioEngine {
       ch.filter = filter;
     } else {
       // Sin filter, conexión directa
-      osc.connect(envelope);
+      audioChain.connect(envelope);
       ch.filter = null;
     }
 
@@ -203,8 +433,9 @@ class AudioEngine {
       switch (instrument.lfo.target) {
         case 'pitch':
           // Modular frecuencia del oscilador
-          if (osc.frequency) {
-            lfoGain.connect(osc.frequency);
+          const freqNode = osc.frequency || (osc.carrier && osc.carrier.frequency);
+          if (freqNode) {
+            lfoGain.connect(freqNode);
           }
           break;
 
@@ -245,8 +476,12 @@ class AudioEngine {
       now + attack + decay
     );
 
-    // Iniciar oscilador
-    osc.start(now);
+    // Iniciar oscilador (simple o complejo)
+    if (osc.start) {
+      osc.start(now);
+    } else if (typeof osc === 'function') {
+      osc();
+    }
 
     // Guardar referencias
     ch.oscillator = osc;
@@ -277,7 +512,17 @@ class AudioEngine {
     ch.envelope.gain.linearRampToValueAtTime(0, now + release);
 
     // Detener oscilador después del release
-    ch.oscillator.stop(now + release);
+    const osc = ch.oscillator;
+    if (osc.stop) {
+      // Oscilador complejo (FM, Karplus-Strong) o simple
+      osc.stop(now + release);
+    } else if (osc.carrier) {
+      // FM specific
+      osc.carrier.stop(now + release);
+      if (osc.modulator) osc.modulator.stop(now + release);
+    } else if (osc.burst) {
+      // Karplus-Strong specific (burst ya se autodestruye)
+    }
 
     // Detener LFO si existe
     if (ch.lfo) {

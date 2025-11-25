@@ -467,10 +467,15 @@ class PatternEditor {
   handleNoteInput(key) {
     if (this.keyToNote.hasOwnProperty(key)) {
       const noteOffset = this.keyToNote[key];
-      const midiNote = (this.currentOctave * 12) + noteOffset;
+      let midiNote = (this.currentOctave * 12) + noteOffset;
 
       // Validar rango MIDI (0-127)
       if (midiNote >= 0 && midiNote <= 127) {
+        // Cuantizar a escala si está habilitado
+        if (this.song && this.song.snapToScale && this.song.scale !== 'Chromatic') {
+          midiNote = Scale.quantizeToScale(midiNote, this.song.rootNote, this.song.scale);
+        }
+
         const cell = this.pattern.getCell(this.cursorRow, this.cursorChannel);
         if (cell) {
           cell.note = midiNote;

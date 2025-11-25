@@ -18,16 +18,21 @@ class Song {
     this.speed = 6;        // Ticks por row
     this.channels = 8;     // Número de canales (8 tracks)
 
-    // Instrumentos - 8 instrumentos optimizados para 8 canales
+    // Configuración de escala musical
+    this.rootNote = 0;           // Nota raíz (0-11, donde 0=C)
+    this.scale = 'Chromatic';    // Escala actual
+    this.snapToScale = false;    // Cuantizar notas a la escala
+
+    // Instrumentos - Set C (Mutable Instruments inspired)
     this.instruments = [
-      Instrument.PRESETS.SQUARE_50(),   // 0: Lead melódico
-      Instrument.PRESETS.SQUARE_25(),   // 1: Bajo gordo
-      Instrument.PRESETS.SQUARE_125(),  // 2: Lead alternativo/arpegios
-      Instrument.PRESETS.TRIANGLE(),    // 3: Bajo suave/melodías
-      Instrument.PRESETS.SAWTOOTH(),    // 4: Lead agresivo
-      Instrument.PRESETS.NOISE(),       // 5: Hi-hat/percusión
-      Instrument.PRESETS.KICK(),        // 6: Kick drum
-      Instrument.PRESETS.SNARE()        // 7: Snare drum
+      Instrument.PRESETS.PWM_LEAD(),      // 0: PWM Lead (Square con vibrato)
+      Instrument.PRESETS.FM_BASS(),       // 1: FM Bass (2-operator)
+      Instrument.PRESETS.PLUCK(),         // 2: Karplus-Strong Pluck
+      Instrument.PRESETS.FORMANT_VOCAL(), // 3: Vocal Formant
+      Instrument.PRESETS.WAVEFOLD_LEAD(), // 4: Wavefolder Lead
+      Instrument.PRESETS.FILTERED_NOISE(),// 5: Filtered Noise
+      Instrument.PRESETS.FM_KICK(),       // 6: FM Kick
+      Instrument.PRESETS.SNARE()          // 7: Snare Drum
     ];
 
     // Patterns
@@ -190,6 +195,9 @@ class Song {
       bpm: this.bpm,
       speed: this.speed,
       channels: this.channels,
+      rootNote: this.rootNote,
+      scale: this.scale,
+      snapToScale: this.snapToScale,
       instruments: this.instruments.map(inst => inst.toJSON()),
       patterns: this.patterns.map(pat => pat.toJSON()),
       order: [...this.order]
@@ -206,6 +214,11 @@ class Song {
     song.bpm = data.bpm || 125;
     song.speed = data.speed || 6;
     song.channels = data.channels || 8;
+
+    // Cargar configuración de escala (con defaults para retrocompatibilidad)
+    song.rootNote = data.rootNote !== undefined ? data.rootNote : 0;
+    song.scale = data.scale || 'Chromatic';
+    song.snapToScale = data.snapToScale || false;
 
     song.instruments = data.instruments.map(inst => Instrument.fromJSON(inst));
     song.patterns = data.patterns.map(pat => Pattern.fromJSON(pat));

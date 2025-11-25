@@ -255,4 +255,36 @@ class AudioEngine {
   setMasterVolume(volume) {
     this.masterGain.gain.value = Math.max(0, Math.min(1, volume));
   }
+
+  /**
+   * Establece la frecuencia de un canal en tiempo real (para efectos)
+   * @param {number} channel - Canal (0-3)
+   * @param {number} frequency - Frecuencia en Hz
+   */
+  setChannelFrequency(channel, frequency) {
+    const ch = this.channels[channel];
+    if (!ch || !ch.oscillator) {
+      return;
+    }
+
+    // Cambiar frecuencia del oscilador activo
+    if (ch.oscillator.frequency) {
+      ch.oscillator.frequency.setValueAtTime(frequency, this.context.currentTime);
+    }
+  }
+
+  /**
+   * Establece el volumen de un canal en tiempo real (para efectos)
+   * @param {number} channel - Canal (0-3)
+   * @param {number} volume - Volumen normalizado (0-1)
+   */
+  setChannelVolume(channel, volume) {
+    const ch = this.channels[channel];
+    if (!ch || !ch.gain) {
+      return;
+    }
+
+    // Cambiar volumen del gain node
+    ch.gain.gain.setValueAtTime(volume, this.context.currentTime);
+  }
 }

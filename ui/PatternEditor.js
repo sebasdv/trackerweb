@@ -40,6 +40,14 @@ class PatternEditor {
     this.currentInstrument = 0; // Instrumento actual
     this.editStep = 1; // Cuántas filas avanzar después de insertar
 
+    // Selección
+    this.selectionActive = false;
+    this.selectionStart = { row: 0, channel: 0 };
+    this.selectionEnd = { row: 0, channel: 0 };
+
+    // Clipboard
+    this.clipboard = null;
+
     // Nombres de notas
     this.noteNames = [
       'C-', 'C#', 'D-', 'D#', 'E-', 'F-',
@@ -118,6 +126,9 @@ class PatternEditor {
 
     // Cells
     this.renderCells();
+
+    // Selección
+    this.renderSelection();
 
     // Cursor
     this.renderCursor();
@@ -260,6 +271,35 @@ class PatternEditor {
   }
 
   /**
+   * Renderiza la selección activa
+   */
+  renderSelection() {
+    if (!this.selectionActive) {
+      return;
+    }
+
+    const selRect = this.getSelectionRect();
+
+    // Highlight de selección
+    fill(100, 150, 200, 80);
+    noStroke();
+
+    for (let row = selRect.startRow; row <= selRect.endRow; row++) {
+      const displayRow = row - this.scrollRow;
+
+      if (displayRow < 0 || displayRow >= this.visibleRows) {
+        continue;
+      }
+
+      const y = 30 + displayRow * this.cellHeight;
+      const startX = 40 + selRect.startChannel * this.channelWidth;
+      const width = (selRect.endChannel - selRect.startChannel + 1) * this.channelWidth;
+
+      rect(startX, y, width, this.cellHeight);
+    }
+  }
+
+  /**
    * Renderiza el cursor
    */
   renderCursor() {
@@ -272,10 +312,12 @@ class PatternEditor {
     const y = 30 + row * this.cellHeight;
     const x = 40 + this.cursorChannel * this.channelWidth;
 
-    // Highlight de fila
-    fill(80, 80, 120, 100);
-    noStroke();
-    rect(40, y, this.pattern.channels * this.channelWidth, this.cellHeight);
+    // Highlight de fila (solo si no hay selección activa)
+    if (!this.selectionActive) {
+      fill(80, 80, 120, 100);
+      noStroke();
+      rect(40, y, this.pattern.channels * this.channelWidth, this.cellHeight);
+    }
 
     // Cursor específico del campo
     const fieldOffsets = [0, 35, 60, 85, 95];
@@ -578,5 +620,122 @@ class PatternEditor {
     } else if (this.cursorRow >= this.scrollRow + this.visibleRows) {
       this.scrollRow = this.cursorRow - this.visibleRows + 1;
     }
+  }
+
+  /**
+   * Inicia una selección
+   */
+  startSelection() {
+    this.selectionActive = true;
+    this.selectionStart = { row: this.cursorRow, channel: this.cursorChannel };
+    this.selectionEnd = { row: this.cursorRow, channel: this.cursorChannel };
+  }
+
+  /**
+   * Actualiza el final de la selección
+   */
+  updateSelection() {
+    if (this.selectionActive) {
+      this.selectionEnd = { row: this.cursorRow, channel: this.cursorChannel };
+    }
+  }
+
+  /**
+   * Cancela la selección
+   */
+  cancelSelection() {
+    this.selectionActive = false;
+  }
+
+  /**
+   * Obtiene el rectángulo de selección normalizado
+   * @returns {Object} Rectángulo con startRow, endRow, startChannel, endChannel
+   */
+  getSelectionRect() {
+    if (!this.selectionActive) {
+      // Si no hay selección, usar solo la celda del cursor
+      return {
+        startRow: this.cursorRow,
+        endRow: this.cursorRow,
+        startChannel: this.cursorChannel,
+        endChannel: this.cursorChannel
+      };
+    }
+
+    return {
+      startRow: Math.min(this.selectionStart.row, this.selectionEnd.row),
+      endRow: Math.max(this.selectionStart.row, this.selectionEnd.row),
+      startChannel: Math.min(this.selectionStart.channel, this.selectionEnd.channel),
+      endChannel: Math.max(this.selectionStart.channel, this.selectionEnd.channel)
+    };
+  }
+
+  /**
+   * Copia la selección al clipboard
+   */
+  copySelection() {
+    const rect = this.getSelectionRect();
+    const data = [];
+
+    for (let row = rect.startRow; row <= rect.endRow; row++) {
+      const rowData = [];
+      for (let ch = rect.startChannel; ch <= rect.endChannel; ch++) {
+        const cell = this.pattern.getCell(row, ch);
+        rowData.push(cell ? { ...cell } : this.pattern.createEmptyCell());
+      }
+      data.push(rowData);
+    }
+
+    this.clipboard = {
+      rows: data.length,
+      channels: data[0].length,
+      data: data
+    };
+
+    console.log(`Copiado ${this.clipboard.rows}x${this.clipboard.channels} celdas`);
+  }
+
+  /**
+   * Corta la selección al clipboard y la borra
+   */
+  cutSelection() {
+    this.copySelection();
+
+    const rect = this.getSelectionRect();
+    for (let row = rect.startRow; row <= rect.endRow; row++) {
+      for (let ch = rect.startChannel; ch <= rect.endChannel; ch++) {
+        this.pattern.clearCell(row, ch);
+      }
+    }
+
+    console.log('Selección cortada');
+  }
+
+  /**
+   * Pega el contenido del clipboard
+   */
+  pasteSelection() {
+    if (!this.clipboard) {
+      console.warn('Clipboard vacío');
+      return;
+    }
+
+    const startRow = this.cursorRow;
+    const startChannel = this.cursorChannel;
+
+    for (let r = 0; r < this.clipboard.rows; r++) {
+      const targetRow = startRow + r;
+      if (targetRow >= this.pattern.rows) break;
+
+      for (let c = 0; c < this.clipboard.channels; c++) {
+        const targetChannel = startChannel + c;
+        if (targetChannel >= this.pattern.channels) break;
+
+        const cellData = this.clipboard.data[r][c];
+        this.pattern.setCell(targetRow, targetChannel, cellData);
+      }
+    }
+
+    console.log(`Pegado ${this.clipboard.rows}x${this.clipboard.channels} celdas`);
   }
 }

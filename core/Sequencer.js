@@ -23,6 +23,17 @@ class Sequencer {
     this.lastTickTime = 0;
     this.tickInterval = this.calculateTickInterval();
 
+    // Procesador de efectos
+    this.effectProcessor = new EffectProcessor(audioEngine);
+
+    // Efectos activos por canal (para procesamiento continuo)
+    this.activeEffects = [
+      { effect: 0x0, param: 0x0 },
+      { effect: 0x0, param: 0x0 },
+      { effect: 0x0, param: 0x0 },
+      { effect: 0x0, param: 0x0 }
+    ];
+
     // Callbacks
     this.onRowChange = null;     // Callback cuando cambia la fila
     this.onOrderChange = null;   // Callback cuando cambia el order
@@ -101,6 +112,14 @@ class Sequencer {
     // En tick 0, procesar la fila
     if (this.currentTick === 0) {
       this.processRow();
+    } else {
+      // En ticks posteriores, procesar efectos continuos
+      for (let ch = 0; ch < this.song.channels; ch++) {
+        const activeEffect = this.activeEffects[ch];
+        if (activeEffect.effect !== 0x0) {
+          this.effectProcessor.processTick(ch, activeEffect.effect, this.currentTick);
+        }
+      }
     }
 
     // Incrementar tick
@@ -133,6 +152,12 @@ class Sequencer {
         continue;
       }
 
+      // Guardar efecto activo del canal para procesamiento continuo
+      this.activeEffects[ch] = {
+        effect: cell.effect || 0x0,
+        param: cell.effectParam || 0x0
+      };
+
       // Si hay nota, reproducirla
       if (cell.note !== null) {
         const instrument = this.song.getInstrument(cell.instrument || 0);
@@ -141,8 +166,19 @@ class Sequencer {
         this.audioEngine.playNote(ch, cell.note, instrument, volume);
       }
 
-      // Procesar efectos (por implementar en Effects.js)
-      if (cell.effect !== 0x0) {
+      // Trigger del efecto (procesamiento inicial)
+      if (cell.effect !== 0x0 || cell.note !== null) {
+        this.effectProcessor.trigger(
+          ch,
+          cell.note,
+          cell.volume,
+          cell.effect || 0x0,
+          cell.effectParam || 0x0
+        );
+      }
+
+      // Procesar efectos globales (speed/tempo)
+      if (cell.effect === 0xF) {
         this.processEffect(ch, cell.effect, cell.effectParam);
       }
     }
@@ -207,8 +243,12 @@ class Sequencer {
           this.song.speed = param;
         } else {
           this.song.bpm = param;
+          this.tickInterval = this.calculateTickInterval();
+          // Resetear el tiempo del último tick para evitar saltos
+          if (this.isPlaying) {
+            this.lastTickTime = Date.now();
+          }
         }
-        this.tickInterval = this.calculateTickInterval();
         break;
     }
   }
@@ -238,6 +278,10 @@ class Sequencer {
   setBPM(bpm) {
     this.song.bpm = Math.max(32, Math.min(255, bpm));
     this.tickInterval = this.calculateTickInterval();
+    // Resetear el tiempo del último tick para evitar saltos
+    if (this.isPlaying) {
+      this.lastTickTime = Date.now();
+    }
   }
 
   /**
@@ -246,6 +290,10 @@ class Sequencer {
    */
   setSpeed(speed) {
     this.song.speed = Math.max(1, Math.min(31, speed));
-    this.tickInterval = this.calculateTickInterval();
+    // El speed no afecta el tickInterval en el sistema FastTracker 2
+    // pero reseteamos el tiempo por consistencia
+    if (this.isPlaying) {
+      this.lastTickTime = Date.now();
+    }
   }
 }

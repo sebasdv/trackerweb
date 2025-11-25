@@ -21,8 +21,9 @@ let currentPatternIndex = 0; // Pattern actual en edición
  * Setup de p5.js
  */
 function setup() {
-  // Crear canvas
-  const canvas = createCanvas(1200, 800);
+  // Crear canvas - Altura ajustada para UI compacta
+  // Título (~40px) + Controls (~70px) + PatternEditor (380px) + Margen (~30px) = ~520px
+  const canvas = createCanvas(1200, 550);
   canvas.parent('canvas-container');
 
   // Configurar p5.js

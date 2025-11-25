@@ -23,16 +23,16 @@ class Song {
     this.scale = 'Chromatic';    // Escala actual
     this.snapToScale = false;    // Cuantizar notas a la escala
 
-    // Instrumentos - 8 instrumentos optimizados para 8 canales
+    // Instrumentos - Set C (Mutable Instruments inspired)
     this.instruments = [
-      Instrument.PRESETS.SQUARE_50(),   // 0: Lead melódico
-      Instrument.PRESETS.SQUARE_25(),   // 1: Bajo gordo
-      Instrument.PRESETS.SQUARE_125(),  // 2: Lead alternativo/arpegios
-      Instrument.PRESETS.TRIANGLE(),    // 3: Bajo suave/melodías
-      Instrument.PRESETS.SAWTOOTH(),    // 4: Lead agresivo
-      Instrument.PRESETS.NOISE(),       // 5: Hi-hat/percusión
-      Instrument.PRESETS.KICK(),        // 6: Kick drum
-      Instrument.PRESETS.SNARE()        // 7: Snare drum
+      Instrument.PRESETS.PWM_LEAD(),      // 0: PWM Lead (Square con vibrato)
+      Instrument.PRESETS.FM_BASS(),       // 1: FM Bass (2-operator)
+      Instrument.PRESETS.PLUCK(),         // 2: Karplus-Strong Pluck
+      Instrument.PRESETS.FORMANT_VOCAL(), // 3: Vocal Formant
+      Instrument.PRESETS.WAVEFOLD_LEAD(), // 4: Wavefolder Lead
+      Instrument.PRESETS.FILTERED_NOISE(),// 5: Filtered Noise
+      Instrument.PRESETS.FM_KICK(),       // 6: FM Kick
+      Instrument.PRESETS.SNARE()          // 7: Snare Drum
     ];
 
     // Patterns

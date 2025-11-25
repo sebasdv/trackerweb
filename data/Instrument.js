@@ -26,6 +26,24 @@ class Instrument {
 
     // Volumen base
     this.volume = 0.5; // 0-1
+
+    // SVF Filter (State Variable Filter)
+    this.filter = {
+      enabled: false,
+      type: 'lowpass',  // lowpass, highpass, bandpass, notch
+      cutoff: 2000,     // Hz (20-20000)
+      resonance: 1.0,   // Q factor (0.1-20)
+      envelope: 0       // Filter envelope amount (0-1)
+    };
+
+    // LFO (Low Frequency Oscillator)
+    this.lfo = {
+      enabled: false,
+      target: 'pitch',  // pitch, filter, volume, pwm
+      waveform: 'sine', // sine, triangle, square, sawtooth
+      rate: 4.0,        // Hz (0.1-20)
+      depth: 0.5        // 0-1
+    };
   }
 
   /**
@@ -38,7 +56,9 @@ class Instrument {
       waveform: this.waveform,
       dutyCycle: this.dutyCycle,
       envelope: { ...this.envelope },
-      volume: this.volume
+      volume: this.volume,
+      filter: { ...this.filter },
+      lfo: { ...this.lfo }
     };
   }
 
@@ -52,6 +72,15 @@ class Instrument {
     instrument.dutyCycle = data.dutyCycle || 0.5;
     instrument.envelope = { ...data.envelope };
     instrument.volume = data.volume || 0.5;
+
+    // Cargar filter y LFO si existen (retrocompatibilidad)
+    if (data.filter) {
+      instrument.filter = { ...data.filter };
+    }
+    if (data.lfo) {
+      instrument.lfo = { ...data.lfo };
+    }
+
     return instrument;
   }
 

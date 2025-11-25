@@ -177,7 +177,7 @@ function startAudio() {
  */
 function createExampleSong() {
   song = new Song('Demo Song', 'TrackWeb');
-  song.bpm = 140;
+  song.bpm = 125;
   song.speed = 6;
 
   // Obtener pattern

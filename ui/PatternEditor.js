@@ -17,6 +17,9 @@ class PatternEditor {
     this.width = w;
     this.height = h;
 
+    // Configurar fuente VT323 para el canvas
+    textFont('VT323');
+
     // Cursor
     this.cursorRow = 0;
     this.cursorChannel = 0;
@@ -150,13 +153,13 @@ class PatternEditor {
 
     // Info de pattern (tamaño) - GameBoy Light (muy visible)
     fill(155, 188, 15);
-    textSize(11);
+    textSize(16);
     textAlign(LEFT, CENTER);
     text(`${this.pattern.rows} rows`, 5, 15);
 
     // Canales - GameBoy Light (muy visible)
     fill(155, 188, 15);
-    textSize(12);
+    textSize(18);
     textAlign(CENTER, CENTER);
 
     for (let ch = 0; ch < this.pattern.channels; ch++) {
@@ -199,7 +202,7 @@ class PatternEditor {
     const endRow = Math.min(startRow + this.visibleRows, this.pattern.rows);
 
     textAlign(LEFT, CENTER);
-    textSize(12);
+    textSize(18);
 
     for (let i = 0; i < endRow - startRow; i++) {
       const row = startRow + i;
@@ -345,7 +348,7 @@ class PatternEditor {
 
     // Texto de info - GameBoy Light (muy visible)
     fill(155, 188, 15);
-    textSize(12);
+    textSize(18);
     textAlign(LEFT, CENTER);
 
     const octaveText = `Oct: ${this.currentOctave}`;

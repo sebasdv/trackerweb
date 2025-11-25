@@ -207,8 +207,12 @@ class Sequencer {
           this.song.speed = param;
         } else {
           this.song.bpm = param;
+          this.tickInterval = this.calculateTickInterval();
+          // Resetear el tiempo del último tick para evitar saltos
+          if (this.isPlaying) {
+            this.lastTickTime = Date.now();
+          }
         }
-        this.tickInterval = this.calculateTickInterval();
         break;
     }
   }
@@ -238,6 +242,10 @@ class Sequencer {
   setBPM(bpm) {
     this.song.bpm = Math.max(32, Math.min(255, bpm));
     this.tickInterval = this.calculateTickInterval();
+    // Resetear el tiempo del último tick para evitar saltos
+    if (this.isPlaying) {
+      this.lastTickTime = Date.now();
+    }
   }
 
   /**
@@ -246,6 +254,10 @@ class Sequencer {
    */
   setSpeed(speed) {
     this.song.speed = Math.max(1, Math.min(31, speed));
-    this.tickInterval = this.calculateTickInterval();
+    // El speed no afecta el tickInterval en el sistema FastTracker 2
+    // pero reseteamos el tiempo por consistencia
+    if (this.isPlaying) {
+      this.lastTickTime = Date.now();
+    }
   }
 }

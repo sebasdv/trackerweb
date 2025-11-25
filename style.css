@@ -16,13 +16,13 @@
   /* Special accent */
   --accent-pink: #ff0066;   /* Special highlights */
 
-  /* Font sizes */
-  --font-xs: 8px;
-  --font-sm: 10px;
-  --font-md: 12px;
-  --font-lg: 14px;
-  --font-xl: 16px;
-  --font-2xl: 20px;
+  /* Font sizes - Adjusted for VT323 readability */
+  --font-xs: 14px;
+  --font-sm: 16px;
+  --font-md: 18px;
+  --font-lg: 22px;
+  --font-xl: 26px;
+  --font-2xl: 32px;
 }
 
 /* ============================================
@@ -44,7 +44,7 @@
 }
 
 body {
-  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-family: 'VT323', 'Courier New', monospace;
   font-size: var(--font-md);
   line-height: 1.6;
   background: var(--gb-accent);
@@ -160,7 +160,7 @@ header p {
    ============================================ */
 button,
 .btn {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'VT323', monospace;
   font-size: var(--font-xs);
   padding: 10px 15px;
   background: var(--gb-light);
@@ -198,7 +198,7 @@ button:disabled {
 
 .btn-sm {
   padding: 6px 10px;
-  font-size: 8px;
+  font-size: var(--font-xs);
 }
 
 .btn-primary {
@@ -210,7 +210,7 @@ button:disabled {
    ============================================ */
 select,
 select.btn {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'VT323', monospace;
   font-size: var(--font-xs);
   padding: 8px 12px;
   background: var(--gb-light);
@@ -393,7 +393,7 @@ body {
   }
 
   header p {
-    font-size: 8px;
+    font-size: var(--font-xs);
   }
 
   #controls-bar {
@@ -430,7 +430,7 @@ body {
 
   button,
   .btn {
-    font-size: 8px;
+    font-size: var(--font-xs);
     padding: 10px;
   }
 }

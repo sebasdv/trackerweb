@@ -136,6 +136,9 @@ class PatternEditor {
     // Cursor
     this.renderCursor();
 
+    // Indicadores de scroll
+    this.renderScrollIndicators();
+
     // Info de edición
     this.renderEditInfo();
 
@@ -331,6 +334,34 @@ class PatternEditor {
     strokeWeight(2);
     noFill();
     rect(fieldX, y + 2, fieldW, this.cellHeight - 4);
+  }
+
+  /**
+   * Renderiza indicadores de scroll
+   */
+  renderScrollIndicators() {
+    const indicatorX = 5;
+    fill('#9bbc0f');
+    textAlign(LEFT, CENTER);
+    textSize(16);
+
+    // Indicador arriba (si hay contenido arriba)
+    if (this.scrollRow > 0) {
+      const y = 30 + 10;
+      text('▲', indicatorX, y);
+    }
+
+    // Indicador abajo (si hay contenido abajo)
+    if (this.scrollRow + this.visibleRows < this.pattern.rows) {
+      const y = 30 + this.visibleRows * this.cellHeight - 10;
+      text('▼', indicatorX, y);
+    }
+
+    // Mostrar scroll info (fila actual / total)
+    fill('#8bac0f');
+    textSize(14);
+    const scrollInfo = `${this.scrollRow + 1}-${Math.min(this.scrollRow + this.visibleRows, this.pattern.rows)}/${this.pattern.rows}`;
+    text(scrollInfo, this.width - 60, 30 + this.visibleRows * this.cellHeight + 10);
   }
 
   /**

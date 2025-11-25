@@ -33,7 +33,8 @@ function setup() {
   createExampleSong();
 
   // Crear UI components
-  patternEditor = new PatternEditor(20, 120, 1160, 620);
+  // Altura ajustada para 16 filas: header (30px) + 16 filas (16×20=320px) + info (30px) = 380px
+  patternEditor = new PatternEditor(20, 120, 1160, 380);
   patternEditor.setPattern(song.patterns[0], song);
 
   controls = new Controls(20, 50, 1160);

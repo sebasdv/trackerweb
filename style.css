@@ -1,160 +1,251 @@
 /**
- * style.css
- * Estilos para TrackWeb
+ * TrackWeb - GameBoy Retro Theme
+ * Inspired by authentic GameBoy aesthetics with CRT effects
  */
 
-/* Reset y base */
+/* ============================================
+   CSS VARIABLES - GameBoy Color Palette
+   ============================================ */
+:root {
+  /* GameBoy 4-color palette */
+  --gb-light: #9bbc0f;      /* Lightest green - primary UI */
+  --gb-medium: #8bac0f;     /* Medium green - hover states */
+  --gb-accent: #306230;     /* Accent green - backgrounds */
+  --gb-dark: #0f380f;       /* Darkest green - text/shadows */
+
+  /* Special accent */
+  --accent-pink: #ff0066;   /* Special highlights */
+
+  /* Font sizes */
+  --font-xs: 8px;
+  --font-sm: 10px;
+  --font-md: 12px;
+  --font-lg: 14px;
+  --font-xl: 16px;
+  --font-2xl: 20px;
+}
+
+/* ============================================
+   RESET & BASE STYLES
+   ============================================ */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  /* Disable font smoothing for pixelated look */
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Pixelated rendering */
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 
 body {
-  font-family: 'Courier New', monospace;
-  background-color: #0a0a0a;
-  color: #e0e0e0;
-  overflow: hidden;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: var(--font-md);
+  line-height: 1.6;
+  background: var(--gb-accent);
+  color: var(--gb-dark);
+  overflow-x: hidden;
+
+  /* CRT scanline effect */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.15) 0px,
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  background-attachment: fixed;
 }
 
-/* Container principal */
+/* CRT vignette overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse 80% 80% at 50% 50%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
 #app {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
 }
 
-/* Header */
 header {
   text-align: center;
   margin-bottom: 20px;
   padding: 20px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  width: 100%;
-  max-width: 1200px;
+  background: var(--gb-dark);
+  border: 4px solid var(--gb-light);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
 header h1 {
-  font-size: 2.5em;
-  font-weight: bold;
-  color: #00d9ff;
-  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
-  margin-bottom: 5px;
-  letter-spacing: 3px;
+  font-size: var(--font-2xl);
+  color: var(--gb-light);
+  text-shadow: 4px 4px 0 var(--gb-accent);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
 }
 
 header p {
-  font-size: 1em;
-  color: #888;
-  letter-spacing: 2px;
+  font-size: var(--font-sm);
+  color: var(--gb-medium);
+  letter-spacing: 1px;
 }
 
-/* Controls bar */
+/* ============================================
+   CONTROLS BAR
+   ============================================ */
 #controls-bar {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
-  width: 100%;
-  max-width: 1200px;
+  justify-content: center;
   margin-bottom: 15px;
-  padding: 15px 20px;
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  background: var(--gb-dark);
+  border: 2px solid var(--gb-light);
+  box-shadow: 4px 4px 0 var(--gb-accent);
 }
 
+.control-group,
 #tempo-controls,
 #pattern-controls,
 #playback-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
+.control-group label,
 #tempo-controls label,
 #pattern-controls label {
-  color: #aaa;
-  font-size: 0.9em;
-  margin-right: 5px;
+  font-size: var(--font-xs);
+  color: var(--gb-light);
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-#tempo-display {
-  display: inline-block;
-  min-width: 50px;
-  padding: 8px 12px;
-  background: #0a0a0a;
-  border: 1px solid #444;
-  border-radius: 4px;
+#tempo-display,
+#pattern-info {
+  min-width: 80px;
   text-align: center;
-  color: #00d9ff;
+  color: var(--gb-light);
   font-weight: bold;
-  font-size: 1em;
+  font-size: var(--font-sm);
 }
 
-/* Buttons and Select */
+/* ============================================
+   BUTTONS - Retro GameBoy Style
+   ============================================ */
+button,
 .btn {
-  padding: 8px 16px;
-  background: #2a2a3e;
-  color: #e0e0e0;
-  border: 1px solid #444;
-  border-radius: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: var(--font-xs);
+  padding: 10px 15px;
+  background: var(--gb-light);
+  color: var(--gb-dark);
+  border: 2px solid var(--gb-dark);
+  border-radius: 0;
   cursor: pointer;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9em;
-  transition: all 0.2s ease;
-  outline: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.1s ease;
+
+  /* Retro offset shadow (no blur) */
+  box-shadow: 4px 4px 0 var(--gb-dark);
 }
 
-select.btn {
-  padding: 8px 12px;
-  min-width: 70px;
-}
-
-select.btn:hover {
-  background: #3a3a4e;
-  border-color: #555;
-}
-
+button:hover,
 .btn:hover {
-  background: #3a3a4e;
-  border-color: #555;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: var(--gb-medium);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--gb-dark);
 }
 
+button:active,
 .btn:active {
-  transform: translateY(0);
+  transform: translate(4px, 4px);
   box-shadow: none;
 }
 
+button:disabled {
+  background: var(--gb-accent);
+  color: var(--gb-dark);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 8px;
+}
+
 .btn-primary {
-  background: #00a8cc;
-  color: #fff;
-  border-color: #00a8cc;
+  background: var(--gb-medium);
 }
 
-.btn-primary:hover {
-  background: #00c8ec;
-  border-color: #00c8ec;
+/* ============================================
+   SELECT INPUTS
+   ============================================ */
+select,
+select.btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: var(--font-xs);
+  padding: 8px 12px;
+  background: var(--gb-light);
+  color: var(--gb-dark);
+  border: 2px solid var(--gb-dark);
+  border-radius: 0;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--gb-dark);
+  transition: all 0.1s ease;
 }
 
-/* Pattern Manager */
+select:hover,
+select.btn:hover {
+  background: var(--gb-medium);
+}
+
+select:focus {
+  outline: 2px solid var(--gb-light);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   PATTERN MANAGER
+   ============================================ */
 #pattern-manager {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   max-width: 1200px;
-  margin-bottom: 10px;
-  padding: 10px 15px;
-  background: #151525;
-  border: 1px solid #333;
-  border-radius: 6px;
+  margin: 0 auto 15px;
+  padding: 12px 15px;
+  background: var(--gb-dark);
+  border: 2px solid var(--gb-light);
+  box-shadow: 4px 4px 0 var(--gb-accent);
 }
 
 #pattern-nav,
@@ -166,120 +257,216 @@ select.btn:hover {
 }
 
 #pattern-info {
-  min-width: 120px;
+  min-width: 140px;
   text-align: center;
-  color: #00d9ff;
+  color: var(--gb-light);
   font-weight: bold;
-  font-size: 0.9em;
+  font-size: var(--font-sm);
+  text-shadow: 2px 2px 0 var(--gb-accent);
 }
 
 #order-display label {
-  color: #aaa;
-  font-size: 0.9em;
+  color: var(--gb-medium);
+  font-size: var(--font-xs);
 }
 
 #order-list {
-  color: #e0e0e0;
-  background: #0a0a0a;
+  color: var(--gb-light);
+  background: var(--gb-accent);
   padding: 6px 12px;
-  border-radius: 4px;
-  border: 1px solid #444;
-  font-size: 0.85em;
+  border: 2px solid var(--gb-medium);
+  font-size: var(--font-xs);
   min-width: 100px;
   display: inline-block;
+  box-shadow: 2px 2px 0 var(--gb-dark) inset;
 }
 
-.btn-sm {
-  padding: 6px 12px;
-  font-size: 0.85em;
-}
-
-/* Canvas container */
+/* ============================================
+   CANVAS CONTAINER
+   ============================================ */
 #canvas-container {
-  border: 2px solid #333;
+  border: 4px solid var(--gb-light);
+  background: var(--gb-dark);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.4);
+  margin: 0 auto;
+  max-width: 1200px;
+
+  /* CRT curve effect */
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
-  background: #0a0a0a;
 }
 
-/* Info footer */
+canvas {
+  cursor: crosshair;
+  display: block;
+}
+
+/* ============================================
+   INFO FOOTER
+   ============================================ */
 #info {
   margin-top: 20px;
   padding: 15px;
-  background: #1a1a1a;
-  border-radius: 8px;
-  border: 1px solid #333;
-  text-align: center;
-  width: 100%;
+  background: var(--gb-dark);
+  border: 2px solid var(--gb-light);
+  box-shadow: 4px 4px 0 var(--gb-accent);
   max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#info h2 {
+  font-size: var(--font-lg);
+  color: var(--gb-light);
+  margin-bottom: 12px;
+  text-shadow: 2px 2px 0 var(--gb-accent);
 }
 
 #info p {
-  color: #888;
-  font-size: 0.9em;
-  letter-spacing: 1px;
+  font-size: var(--font-xs);
+  color: var(--gb-medium);
+  line-height: 1.8;
+  margin-bottom: 8px;
 }
 
-/* Animations */
-@keyframes glow {
-  0%, 100% {
-    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+#info strong,
+#info kbd {
+  color: var(--gb-light);
+  background: var(--gb-accent);
+  padding: 2px 6px;
+  border: 1px solid var(--gb-medium);
+  display: inline-block;
+  margin: 0 2px;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gb-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gb-accent);
+  border: 2px solid var(--gb-dark);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gb-medium);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 0.98; }
+  50% { opacity: 0.96; }
+  100% { opacity: 0.98; }
+}
+
+/* Subtle CRT flicker on body */
+body {
+  animation: crt-flicker 0.15s infinite;
+}
+
+/* Pulse animation for active states */
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: var(--font-xl);
   }
-  50% {
-    text-shadow: 0 0 20px rgba(0, 217, 255, 0.8);
+
+  header p {
+    font-size: 8px;
+  }
+
+  #controls-bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #pattern-manager {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 10px;
+  }
+
+  button,
+  .btn {
+    width: 100%;
+    padding: 12px;
   }
 }
 
-header h1 {
-  animation: glow 2s ease-in-out infinite;
-}
-
-/* Responsive */
-@media (max-width: 1250px) {
+@media (max-width: 480px) {
   #app {
     padding: 10px;
   }
 
+  header {
+    padding: 15px 10px;
+  }
+
   header h1 {
-    font-size: 2em;
+    font-size: var(--font-lg);
+    letter-spacing: 1px;
   }
 
-  header p {
-    font-size: 0.9em;
-  }
-}
-
-@media (max-width: 768px) {
-  header h1 {
-    font-size: 1.5em;
-  }
-
-  #info p {
-    font-size: 0.8em;
+  button,
+  .btn {
+    font-size: 8px;
+    padding: 10px;
   }
 }
 
-/* Scrollbar personalizado */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: #1a1a1a;
+/* Focus styles for keyboard navigation */
+button:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--gb-light);
+  outline-offset: 3px;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 5px;
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.text-center {
+  text-align: center;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+.mb-1 { margin-bottom: 10px; }
+.mb-2 { margin-bottom: 20px; }
+.mt-1 { margin-top: 10px; }
+.mt-2 { margin-top: 20px; }
 
-/* Cursor personalizado para canvas */
-canvas {
-  cursor: crosshair;
+.hidden {
+  display: none !important;
 }

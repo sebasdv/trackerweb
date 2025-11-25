@@ -113,8 +113,8 @@ class PatternEditor {
     push();
     translate(this.x, this.y);
 
-    // Fondo
-    fill(20);
+    // Fondo - GameBoy Dark
+    fill(15, 56, 15);
     noStroke();
     rect(0, 0, this.width, this.height);
 
@@ -143,18 +143,19 @@ class PatternEditor {
    * Renderiza el header con números de canal
    */
   renderHeader() {
-    fill(60);
+    // Header background - GameBoy Accent
+    fill(48, 98, 48);
     noStroke();
     rect(0, 0, this.width, 30);
 
-    // Info de pattern (tamaño)
-    fill(150);
+    // Info de pattern (tamaño) - GameBoy Medium
+    fill(139, 172, 15);
     textSize(11);
     textAlign(LEFT, CENTER);
     text(`${this.pattern.rows} rows`, 5, 15);
 
-    // Canales
-    fill(200);
+    // Canales - GameBoy Light
+    fill(155, 188, 15);
     textSize(12);
     textAlign(CENTER, CENTER);
 
@@ -168,7 +169,8 @@ class PatternEditor {
    * Renderiza el grid
    */
   renderGrid() {
-    stroke(40);
+    // Grid lines - GameBoy Accent (darker)
+    stroke(48, 98, 48);
     strokeWeight(1);
 
     const startRow = this.scrollRow;
@@ -203,8 +205,8 @@ class PatternEditor {
       const row = startRow + i;
       const y = 30 + i * this.cellHeight + this.cellHeight / 2;
 
-      // Número de fila
-      fill(row % 4 === 0 ? 200 : 150);
+      // Número de fila - GameBoy Light (brighter on 4-beat marks)
+      fill(row % 4 === 0 ? 155 : 139, row % 4 === 0 ? 188 : 172, 15);
       text(row.toString().padStart(2, '0'), 8, y);
 
       // Celdas de cada canal
@@ -228,7 +230,8 @@ class PatternEditor {
       return;
     }
 
-    fill(180);
+    // Cell text - GameBoy Light
+    fill(155, 188, 15);
 
     // Nota
     const noteStr = this.formatNote(cell.note);
@@ -280,8 +283,8 @@ class PatternEditor {
 
     const selRect = this.getSelectionRect();
 
-    // Highlight de selección
-    fill(100, 150, 200, 80);
+    // Highlight de selección - GameBoy Medium with alpha
+    fill(139, 172, 15, 80);
     noStroke();
 
     for (let row = selRect.startRow; row <= selRect.endRow; row++) {
@@ -312,20 +315,20 @@ class PatternEditor {
     const y = 30 + row * this.cellHeight;
     const x = 40 + this.cursorChannel * this.channelWidth;
 
-    // Highlight de fila (solo si no hay selección activa)
+    // Highlight de fila (solo si no hay selección activa) - GameBoy Accent with alpha
     if (!this.selectionActive) {
-      fill(80, 80, 120, 100);
+      fill(48, 98, 48, 100);
       noStroke();
       rect(40, y, this.pattern.channels * this.channelWidth, this.cellHeight);
     }
 
-    // Cursor específico del campo
+    // Cursor específico del campo - GameBoy Light (bright green)
     const fieldOffsets = [0, 35, 60, 85, 95];
     const fieldWidths = [30, 20, 20, 10, 20];
     const fieldX = x + fieldOffsets[this.cursorField] + 5;
     const fieldW = fieldWidths[this.cursorField];
 
-    stroke(255, 200, 0);
+    stroke(155, 188, 15);
     strokeWeight(2);
     noFill();
     rect(fieldX, y + 2, fieldW, this.cellHeight - 4);
@@ -335,13 +338,13 @@ class PatternEditor {
    * Renderiza información de edición (octava, instrumento)
    */
   renderEditInfo() {
-    // Fondo para info
-    fill(30);
+    // Fondo para info - GameBoy Accent
+    fill(48, 98, 48);
     noStroke();
     rect(this.width - 180, 5, 175, 20);
 
-    // Texto de info
-    fill(0, 200, 255);
+    // Texto de info - GameBoy Light
+    fill(155, 188, 15);
     textSize(12);
     textAlign(LEFT, CENTER);
 

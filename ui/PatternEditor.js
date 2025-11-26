@@ -776,4 +776,17 @@ class PatternEditor {
 
     console.log(`Pegado ${this.clipboard.rows}x${this.clipboard.channels} celdas`);
   }
+
+  /**
+   * Limpia todo el patrón
+   */
+  clearPattern() {
+    if (!this.pattern) {
+      console.warn('No hay patrón para limpiar');
+      return;
+    }
+
+    this.pattern.clear();
+    console.log('Patrón limpiado completamente');
+  }
 }

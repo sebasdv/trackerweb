@@ -107,6 +107,14 @@ function keyPressed() {
     return false; // Prevenir default
   }
 
+  // Ctrl+Shift+Delete: Limpiar todo el patrón
+  if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && (keyCode === DELETE || keyCode === BACKSPACE)) {
+    if (confirm('¿Borrar todo el patrón? Esta acción no se puede deshacer.')) {
+      patternEditor.clearPattern();
+    }
+    return false; // Prevenir default
+  }
+
   // Pattern editor
   patternEditor.handleKeyPress(key, keyCode);
 
@@ -576,6 +584,11 @@ function updateOrderDisplay() {
 function switchToPattern(index) {
   if (!song || index < 0 || index >= song.patterns.length) {
     return;
+  }
+
+  // Detener todas las notas antes de cambiar de patrón
+  if (audioEngine) {
+    audioEngine.stopAll();
   }
 
   currentPatternIndex = index;
